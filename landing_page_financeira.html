@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script
+        id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { primary: "#b4ffac", "background-light": "#f6f8f5", "background-dark": "#11230f", "muted-green": "#90AB8B", "deep-forest": "#5A7863", "slate-blue": "#3B4953", "light-sage": "#EBF4DD" }, fontFamily: { display: "Inter" }, borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" } } } };</script>
+    <title>LisoControl - Personal Finance Management</title>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- Navigation -->
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-deep-forest/30 px-6 py-4 lg:px-20">
+                <div class="flex items-center gap-3 text-primary">
+                    <span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">
+                        LisoControl</h2>
+                </div>
+                <div class="hidden md:flex flex-1 justify-end gap-10 items-center">
+                    <nav class="flex items-center gap-8">
+                        <a class="text-slate-600 dark:text-muted-green hover:text-primary transition-colors text-sm font-medium"
+                            href="#features">Recursos</a>
+                        <a class="text-slate-600 dark:text-muted-green hover:text-primary transition-colors text-sm font-medium"
+                            href="#credit">Inteligência</a>
+                        <a class="text-slate-600 dark:text-muted-green hover:text-primary transition-colors text-sm font-medium"
+                            href="#students">Estudantes</a>
+                        <a class="text-slate-600 dark:text-muted-green hover:text-primary transition-colors text-sm font-medium"
+                            href="#">Preços</a>
+                    </nav>
+                    <button
+                        class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-background-dark text-sm font-bold transition-transform hover:scale-105 active:scale-95">
+                        Começar Agora
+                    </button>
+                </div>
+                <div class="md:hidden">
+                    <span class="material-symbols-outlined text-slate-100">menu</span>
+                </div>
+            </header>
+            <!-- Hero Section -->
+            <main class="flex-1">
+                <div class="mx-auto max-w-[1200px] px-6 py-12 lg:py-24">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex flex-col gap-4">
+                                <span class="text-primary font-bold tracking-widest text-xs uppercase">Gestão de
+                                    Elite</span>
+                                <h1
+                                    class="text-slate-900 dark:text-slate-100 text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
+                                    Assuma o comando da sua <span class="text-primary">riqueza</span>.
+                                </h1>
+                                <p class="text-slate-600 dark:text-muted-green text-lg leading-relaxed max-w-md">
+                                    O LisoControl é a ferramenta de finanças pessoais de nível profissional projetada
+                                    para gestão precisa de fluxo de caixa e inteligência de crédito.
+                                </p>
+                            </div>
+                            <div class="flex flex-wrap gap-4">
+                                <button
+                                    class="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-primary text-background-dark text-base font-bold shadow-lg shadow-primary/20">
+                                    Teste Grátis 30 Dias
+                                </button>
+                                <button
+                                    class="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 border border-deep-forest text-slate-900 dark:text-slate-100 text-base font-bold hover:bg-deep-forest/10">
+                                    Ver Demonstração
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div
+                                class="w-full aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-deep-forest/10 border border-deep-forest/20 p-4">
+                                <div class="w-full h-full rounded-xl bg-background-dark shadow-2xl overflow-hidden border border-white/5"
+                                    data-alt="Dashboard showing financial charts and cash flow data"
+                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuApuANVzNXNnTTQRpJBLCEFI6ZTMvgK7Dfk7Qi3bbITlJdAFPsqgQDqHPNizFXnWVb9tCOAVm0FNyEs247kRXp6_ybR7CNRUrcEJlWQUkRPpqJ-YnU0Cz2GaKk0Jwt2MogHqfrEjKgwhho6MttGyYf0JaXMDuOFtka5z5R9rqiemxfh4b_X8nlMEjPyBjI_O_MfphXYm5-lvZLa4Itl7Qy4lVPODv1evDi-XTKIWye_vsnPXXEe24m2mNSDjysiU1FHFdSjp3ZHq18'); background-size: cover; background-position: center;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Cash Flow Heatmap Section -->
+                <section class="bg-light-sage/5 dark:bg-white/5 py-24" id="features">
+                    <div class="mx-auto max-w-[1200px] px-6">
+                        <div class="flex flex-col gap-4 mb-16">
+                            <h2 class="text-slate-900 dark:text-slate-100 text-4xl font-bold tracking-tight">
+                                Domine seu Fluxo de Caixa
+                            </h2>
+                            <p class="text-slate-600 dark:text-muted-green text-lg max-w-2xl">
+                                Visualize seus padrões de gastos com nosso exclusivo Calendário Heatmap, garantindo que
+                                você nunca perca o ritmo em sua gestão de liquidez.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div
+                                class="group flex flex-col gap-6 p-8 rounded-2xl bg-white dark:bg-background-dark border border-slate-200 dark:border-deep-forest/30 transition-all hover:border-primary/50">
+                                <div
+                                    class="size-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined text-3xl">calendar_view_month</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold mb-2">Calendário Heatmap</h3>
+                                    <p class="text-slate-600 dark:text-muted-green leading-relaxed">
+                                        Mapas de intensidade visual para identificar dias de maior gasto e planejar sua
+                                        liquidez semanal com precisão cirúrgica.
+                                    </p>
+                                </div>
+                                <div class="w-full aspect-video rounded-lg bg-slate-100 dark:bg-deep-forest/10 flex items-center justify-center border border-dashed border-muted-green/30"
+                                    data-alt="A visual heatmap calendar showing spending intensity"
+                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBUWQoqeEDF4d2yADjLMpZZjZG9fVKkA_Rw-uChUV9pZW8ZLxrMataYgSRBwtfLEpOqoG6YUqOUOxqH3WGMKUT6F6uirjdKK6c2WKI1O6HLMRSd9Pl7jiTVL7Jv2_TQBhhVVNCEePczDM3dCpYDCgeX_0AQ1pGk3IscQUvfuaAEt039lVt364On5aHxc2l-xvz5yIms4Ac5Bpdz7vKXcjcWPshwgZQk8ExaLlhToFz_pug0SeDaj8iG_Chw_AwLDytVTyGW9dCzlIk'); background-size: cover;">
+                                </div>
+                            </div>
+                            <div
+                                class="group flex flex-col gap-6 p-8 rounded-2xl bg-white dark:bg-background-dark border border-slate-200 dark:border-deep-forest/30 transition-all hover:border-primary/50">
+                                <div
+                                    class="size-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined text-3xl">bolt</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold mb-2">Rastreamento em Tempo Real</h3>
+                                    <p class="text-slate-600 dark:text-muted-green leading-relaxed">
+                                        Atualizações instantâneas de cada transação em todas as suas contas,
+                                        categorizadas automaticamente por IA.
+                                    </p>
+                                </div>
+                                <div class="w-full aspect-video rounded-lg bg-slate-100 dark:bg-deep-forest/10 flex items-center justify-center border border-dashed border-muted-green/30"
+                                    data-alt="Real-time financial analytics dashboard interface"
+                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeEubKWAGNWmgxgw08Vba4RLOFYQLfyfcmxcErW46R7SfJu9u-LneBmK1v3Sjxh5C3Z3hlRT3DWJ0p8k6d8rv0kAqEfiNdDtCWr1EBwSqzj9M_FTQnNlyRedVr6cWPfAjgr4kAwBMIMi5saPM-lT45RFUbKiFiXfytfLARdalzfsMxIv29cPN-QqdbQYJF6j6qo8cnPJ7LUaWxVR4JiPnabFUfVRGG2FgoNLNxHghVU0lG5diE-1bpMdK0bQRDA2ctVeijnmH2Yu4'); background-size: cover;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Credit Intelligence -->
+                <section class="py-24" id="credit">
+                    <div class="mx-auto max-w-[1200px] px-6">
+                        <div class="flex flex-col gap-4 mb-16 items-center text-center">
+                            <h2 class="text-slate-900 dark:text-slate-100 text-4xl font-bold tracking-tight">
+                                Inteligência de Cartão de Crédito
+                            </h2>
+                            <p class="text-slate-600 dark:text-muted-green text-lg max-w-2xl">
+                                Alertas inteligentes e gestão de limites para proteger seu score e otimizar suas
+                                recompensas.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div
+                                class="flex flex-col gap-4 p-6 rounded-xl border border-slate-200 dark:border-deep-forest/30 bg-white dark:bg-[#1c261f]">
+                                <span
+                                    class="material-symbols-outlined text-primary text-3xl">notifications_active</span>
+                                <h3 class="text-lg font-bold">Alertas Inteligentes</h3>
+                                <p class="text-sm text-slate-600 dark:text-muted-green">Seja notificado antes que os
+                                    juros entrem em vigor ou quando atingir 30% do uso do limite.</p>
+                            </div>
+                            <div
+                                class="flex flex-col gap-4 p-6 rounded-xl border border-slate-200 dark:border-deep-forest/30 bg-white dark:bg-[#1c261f]">
+                                <span class="material-symbols-outlined text-primary text-3xl">trending_up</span>
+                                <h3 class="text-lg font-bold">Otimização de Limites</h3>
+                                <p class="text-sm text-slate-600 dark:text-muted-green">Conselhos baseados em dados
+                                    sobre os melhores momentos para solicitar aumentos de limite e melhorar seu score.
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col gap-4 p-6 rounded-xl border border-slate-200 dark:border-deep-forest/30 bg-white dark:bg-[#1c261f]">
+                                <span class="material-symbols-outlined text-primary text-3xl">verified_user</span>
+                                <h3 class="text-lg font-bold">Detecção de Fraude</h3>
+                                <p class="text-sm text-slate-600 dark:text-muted-green">Monitoramento impulsionado por
+                                    IA para detectar atividades incomuns em frações de segundo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Student Features -->
+                <section class="bg-light-sage/10 dark:bg-deep-forest/5 py-24" id="students">
+                    <div class="mx-auto max-w-[1200px] px-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                            <div class="order-2 lg:order-1 flex flex-col gap-8">
+                                <h2 class="text-slate-900 dark:text-slate-100 text-4xl font-bold leading-tight">
+                                    Feito para a Próxima Geração
+                                </h2>
+                                <p class="text-slate-600 dark:text-muted-green text-lg">
+                                    Recursos sob medida para estudantes gerenciarem despesas compartilhadas em
+                                    repúblicas e atingirem metas de economia agressivas.
+                                </p>
+                                <div class="flex flex-col gap-6">
+                                    <div class="flex gap-4">
+                                        <div
+                                            class="size-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                                            <span class="material-symbols-outlined text-background-dark">groups</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold">Despesas Compartilhadas</h4>
+                                            <p class="text-sm text-slate-600 dark:text-muted-green">Divida contas com
+                                                colegas de quarto sem estresse e acompanhe quem já pagou.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4">
+                                        <div
+                                            class="size-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                                            <span class="material-symbols-outlined text-background-dark">savings</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold">Metas Gamificadas</h4>
+                                            <p class="text-sm text-slate-600 dark:text-muted-green">Alcance marcos de
+                                                economia para mensalidades, viagens ou seu primeiro carro com
+                                                recompensas digitais.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="order-1 lg:order-2 grid grid-cols-2 gap-4">
+                                <div class="h-64 rounded-xl bg-deep-forest/20 overflow-hidden"
+                                    data-alt="Students laughing and using their phones together"
+                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdGN-IeaZAgfGgaNcjfm5sA93n0hcDjB8nSx52UJDzvtacecMjIoqgaixkJAQgSToRSBtD7dgFgZD6BtEp8lS810USs65d91NIsyCPaTZW58sneRw9D4cjf0QtcZvKxhVFJ9ZEBdiZmgMHrBz5gfqQtXVW66DqaaCqZOUoAXDM9GxaVojfWerj2Y_dQ8j-fPNmB3sFS7U6l8HDWmAL-OECT7s6dQSC2Bnkb-K8v32cj9KjJSfpi9KgB_m9-jOHaR8razAM8TDUxpw'); background-size: cover;">
+                                </div>
+                                <div class="h-64 rounded-xl bg-primary/20 mt-8 overflow-hidden"
+                                    data-alt="A jar being filled with coins, representing savings"
+                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA9QvBTflueDYwvKVhsmboH39eKCJW99hpu5WOxj77AHvUGUgUwodm9uCnf58PzPQK327JoUOygNLSLALZXe8jNlfQB1E1q98V70OrZp87lHXjICVqnqLTdMj9ok5AXVBoUADK-89XIYgRYYjdO2EdCxerTwifEZ75H-pJV0gxixCBz8A7mZPLlmqLviCmzhUGBbEsEVIY4iiRXjtgvplNu-5Hum0VAsfSM3qjgkN6m1qRDh0See2GBRefcq5ZoLa0D4dm4yP_j2fg'); background-size: cover;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Trust Section -->
+                <section class="py-24 border-t border-slate-200 dark:border-deep-forest/20">
+                    <div class="mx-auto max-w-[1200px] px-6 text-center">
+                        <h3
+                            class="text-slate-500 dark:text-muted-green uppercase tracking-[0.2em] text-xs font-bold mb-12">
+                            Segurança e Transparência</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div class="flex flex-col items-center gap-3">
+                                <span class="material-symbols-outlined text-primary text-4xl">lock</span>
+                                <span class="font-bold">Criptografia AES-256</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-3">
+                                <span class="material-symbols-outlined text-primary text-4xl">visibility_off</span>
+                                <span class="font-bold">Modo Privacidade</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-3">
+                                <span class="material-symbols-outlined text-primary text-4xl">download</span>
+                                <span class="font-bold">Exportação de Dados</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-3">
+                                <span class="material-symbols-outlined text-primary text-4xl">verified</span>
+                                <span class="font-bold">Auditoria Semanal</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <!-- Footer -->
+            <footer
+                class="bg-slate-100 dark:bg-background-dark border-t border-slate-200 dark:border-deep-forest/30 py-16">
+                <div class="mx-auto max-w-[1200px] px-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center gap-2 text-primary">
+                                <span class="material-symbols-outlined">account_balance_wallet</span>
+                                <span class="text-slate-900 dark:text-slate-100 font-bold text-xl">LisoControl</span>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-muted-green leading-relaxed">
+                                Transformando a maneira como você se relaciona com seu dinheiro através de dados e
+                                inteligência.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-6">Produto</h4>
+                            <ul class="flex flex-col gap-3 text-sm text-slate-600 dark:text-muted-green">
+                                <li><a class="hover:text-primary" href="#">Funcionalidades</a></li>
+                                <li><a class="hover:text-primary" href="#">Metodologia</a></li>
+                                <li><a class="hover:text-primary" href="#">Segurança</a></li>
+                                <li><a class="hover:text-primary" href="#">Integrações</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-6">Suporte</h4>
+                            <ul class="flex flex-col gap-3 text-sm text-slate-600 dark:text-muted-green">
+                                <li><a class="hover:text-primary" href="#">Central de Ajuda</a></li>
+                                <li><a class="hover:text-primary" href="#">Comunidade</a></li>
+                                <li><a class="hover:text-primary" href="#">API</a></li>
+                                <li><a class="hover:text-primary" href="#">Status</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-6">Jurídico</h4>
+                            <ul class="flex flex-col gap-3 text-sm text-slate-600 dark:text-muted-green">
+                                <li><a class="hover:text-primary" href="#">Privacidade</a></li>
+                                <li><a class="hover:text-primary" href="#">Termos de Uso</a></li>
+                                <li><a class="hover:text-primary" href="#">Cookies</a></li>
+                                <li><a class="hover:text-primary" href="#">Modo Privacidade</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-slate-200 dark:border-deep-forest/20">
+                        <p class="text-xs text-slate-500 dark:text-muted-green">© 2024 LisoControl. Todos os direitos
+                            reservados. Exportação de Dados disponível em conformidade com LGPD.</p>
+                        <div class="flex gap-6">
+                            <a class="text-slate-500 dark:text-muted-green hover:text-primary transition-colors"
+                                href="#"><span class="material-symbols-outlined">social_leaderboard</span></a>
+                            <a class="text-slate-500 dark:text-muted-green hover:text-primary transition-colors"
+                                href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+                            <a class="text-slate-500 dark:text-muted-green hover:text-primary transition-colors"
+                                href="#"><span class="material-symbols-outlined">podcasts</span></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>
