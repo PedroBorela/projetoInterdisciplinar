@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# LisoControl - Projeto Integrador
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositório contém a **Landing Page** do projeto **LisoControl**, ferramenta desenvolvida como parte da disciplina de **Projeto Integrador** do curso de **Sistemas de Informação**.
 
-Currently, two official plugins are available:
+## 🚀 Sobre o Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O **LisoControl** é uma plataforma focada em gestão financeira inteligente, controle de fluxo de caixa e otimização de crédito. Este projeto está sendo construído em equipe e, além desta página de apresentação institucional (Landing Page), contemplará futuramente a **aplicação completa** com as funcionalidades de gerenciamento.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tecnologias Utilizadas
 
-## Expanding the ESLint configuration
+Para garantir uma interface premium e animações fluidas, utilizamos:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **React + TypeScript** (Base do projeto)
+- **Vite** (Build tool rápida)
+- **GSAP** (GreenSock Animation Platform) para as animações de entrada e interações fluídas.
+- **Tailwind CSS v4** para estilização moderna e sistema de design.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📂 Estrutura do Repositório
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `/src/components`: Contém os componentes modulares da Landing Page (Hero, Features, Header, etc).
+- `/public`: Ativos estáticos, incluindo o vídeo de fundo `Fluid_animation_wavy.mp4`.
+- `/src/index.css`: Definições do Design System (tokens de cores, tipografia e utilitários).
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ Como executar o projeto localmente
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Para rodar a Landing Page na sua máquina:
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [url-do-repositorio]
+    ```
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+3.  **Execute o servidor de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## 👥 Equipe
+Projeto desenvolvido para a disciplina de **Projeto Integrador** do curso de **Sistemas de Informação**.
+
+---
+*Este é um projeto em desenvolvimento.*
