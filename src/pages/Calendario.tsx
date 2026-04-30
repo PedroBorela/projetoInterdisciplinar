@@ -1,221 +1,230 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 export function Calendario() {
   return (
     <>
+      <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl flex justify-between items-center px-6 py-4 border-b border-outline-variant/20">
+        <div className="text-xl font-extrabold tracking-tight text-primary font-headline">LisoControl</div>
+        <div className="flex items-center gap-3">
+          <button className="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full">
+            <span className="material-symbols-outlined">notifications</span>
+          </button>
+          <button className="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full">
+            <span className="material-symbols-outlined">account_circle</span>
+          </button>
+        </div>
+      </header>
 
+      <main className="pt-28 pb-36 px-5 max-w-4xl mx-auto">
 
-<header className="fixed top-0 w-full z-50 bg-surface/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
-<div className="text-xl font-extrabold tracking-tight text-violet-800 dark:text-violet-300">LisoControl</div>
-<div className="flex items-center gap-4">
-<button className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full cursor-pointer">
-<span className="material-symbols-outlined" data-icon="notifications">notifications</span>
-</button>
-<button className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full cursor-pointer">
-<span className="material-symbols-outlined" data-icon="account_circle">account_circle</span>
-</button>
-</div>
-</header>
-<main className="pt-24 px-6 max-w-4xl mx-auto">
+        {/* Title */}
+        <div className="mb-8">
+          <h1 className="font-headline text-4xl font-bold tracking-tight text-on-surface mb-2">Insights</h1>
+          <p className="text-on-surface-variant font-medium text-sm">Organizando sua linha do tempo financeira, um registro por vez.</p>
+        </div>
 
-<div className="mb-10">
-<h1 className="font-headline text-4xl font-bold tracking-tight text-on-surface mb-2">Insights</h1>
-<p className="text-on-surface-variant font-medium">Organizando sua linha do tempo financeira, um registro por vez.</p>
-</div>
+        {/* Controles */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-7">
+          <div className="flex bg-surface-container-lowest p-1.5 rounded-2xl editorial-shadow">
+            <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-primary text-on-primary shadow-sm">Mensal</button>
+            <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-on-surface-variant hover:text-primary">Semanal</button>
+          </div>
+          <div className="flex items-center gap-3 bg-surface-container-lowest px-4 py-2.5 rounded-2xl editorial-shadow">
+            <button className="text-primary hover:opacity-70 transition-all">
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <span className="font-headline text-base font-bold min-w-[136px] text-center text-on-surface">Outubro 2023</span>
+            <button className="text-primary hover:opacity-70 transition-all">
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
 
-<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-<div className="flex bg-surface-container-low p-1.5 rounded-2xl">
-<button className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-surface-container-lowest shadow-sm text-primary cursor-pointer">Mensal</button>
-<button className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all text-on-surface-variant hover:text-primary cursor-pointer">Semanal</button>
-</div>
-<div className="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-2xl">
-<button className="text-primary hover:opacity-70 transition-all cursor-pointer">
-<span className="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
-</button>
-<span className="font-headline text-lg font-bold min-w-[140px] text-center">Outubro 2023</span>
-<button className="text-primary hover:opacity-70 transition-all cursor-pointer">
-<span className="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-</button>
-</div>
-</div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Calendário */}
+          <div className="lg:col-span-8 bg-surface-container-lowest rounded-2xl p-7 editorial-shadow">
+            <div className="grid grid-cols-7 gap-y-6 text-center">
+              {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map(d => (
+                <div key={d} className="text-[10px] font-bold text-outline uppercase tracking-widest pb-3">{d}</div>
+              ))}
 
-<div className="lg:col-span-8 bg-surface-container-lowest rounded-[24px] p-8 shadow-sm">
-<div className="grid grid-cols-7 gap-y-8 text-center">
+              {/* Dias do mês anterior */}
+              {[25, 26, 27, 28, 29, 30].map(d => (
+                <div key={d} className="flex flex-col items-center justify-center p-2 opacity-25 text-sm font-medium text-on-surface-variant">{d}</div>
+              ))}
 
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Seg</div>
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Ter</div>
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Qua</div>
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Qui</div>
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Sex</div>
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Sáb</div>
-<div className="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Dom</div>
-<div className="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">25</div>
-<div className="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">26</div>
-<div className="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">27</div>
-<div className="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">28</div>
-<div className="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">29</div>
-<div className="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">30</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
-                        1 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-secondary-fixed-dim"></span></div>
-</div>
+              {/* Dia 1 */}
+              <div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                1
+                <div className="absolute -bottom-1 flex gap-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-income" />
+                </div>
+              </div>
 
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
-                        2 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
-</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
-                        3 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
-</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
-                        4 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-secondary-fixed-dim"></span><span className="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
-</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
-                        5 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
-</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
-                        6 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-secondary-fixed-dim"></span></div>
-</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">7</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">8</div>
+              {/* Dias 2–11 */}
+              {[
+                { d: 2, dots: ['expense'] as string[] },
+                { d: 3, dots: ['expense'] as string[] },
+                { d: 4, dots: ['income', 'expense'] as string[] },
+                { d: 5, dots: ['expense'] as string[] },
+                { d: 6, dots: ['income'] as string[] },
+                { d: 7, dots: [] as string[] },
+                { d: 8, dots: [] as string[] },
+                { d: 9, dots: [] as string[] },
+                { d: 10, dots: [] as string[] },
+                { d: 11, dots: [] as string[] },
+              ].map(({ d, dots }) => (
+                <div key={d} className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface hover:bg-surface-container-low rounded-xl transition-colors cursor-pointer">
+                  {d}
+                  {dots.length > 0 && (
+                    <div className="absolute -bottom-1 flex gap-0.5">
+                      {dots.map((c, i) => (
+                        <span key={i} className={`w-1.5 h-1.5 rounded-full ${c === 'income' ? 'bg-income' : 'bg-expense'}`} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
 
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">9</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">10</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">11</div>
-<div className="relative flex flex-col items-center justify-center p-2 bg-primary text-on-primary rounded-xl ring-4 ring-primary-fixed ring-opacity-50 text-sm font-bold">
-                        12 <div className="absolute -bottom-1 flex gap-1"><span className="w-1 h-1 rounded-full bg-secondary-fixed"></span><span className="w-1 h-1 rounded-full bg-white"></span></div>
-</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">13</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">14</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">15</div>
+              {/* Hoje — dia 12 destacado */}
+              <div className="relative flex flex-col items-center justify-center p-2 bg-primary text-on-primary rounded-xl ring-4 ring-primary/20 text-sm font-bold cursor-pointer">
+                12
+                <div className="absolute -bottom-1 flex gap-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
+                </div>
+              </div>
 
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">16</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">17</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">18</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">19</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">20</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">21</div>
-<div className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">22</div>
-</div>
-</div>
+              {/* Dias 13–22 */}
+              {[13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(d => (
+                <div key={d} className="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface hover:bg-surface-container-low rounded-xl transition-colors cursor-pointer">
+                  {d}
+                </div>
+              ))}
+            </div>
+          </div>
 
-<div className="lg:col-span-4 flex flex-col gap-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-4 flex flex-col gap-5">
 
-<div className="bg-primary bg-gradient-to-br from-primary to-primary-container rounded-[24px] p-8 text-on-primary shadow-lg">
-<p className="font-headline text-sm font-semibold opacity-80 mb-1">Quinta-feira</p>
-<h3 className="font-headline text-3xl font-bold mb-6 tracking-tight">12 de Outubro</h3>
-<div className="space-y-4">
-<div className="flex justify-between items-center">
-<span className="text-xs font-semibold uppercase tracking-wider opacity-70">Ganhos</span>
-<span className="font-headline text-xl font-bold">+ R$ 1.240,00</span>
-</div>
-<div className="h-[2px] bg-white/10"></div>
-<div className="flex justify-between items-center">
-<span className="text-xs font-semibold uppercase tracking-wider opacity-70">Gastos</span>
-<span className="font-headline text-xl font-bold">- R$ 342,12</span>
-</div>
-</div>
-</div>
+            {/* Resumo do dia */}
+            <div className="primary-gradient rounded-2xl p-7 text-on-primary editorial-shadow">
+              <p className="text-sm font-semibold opacity-70 mb-0.5">Quinta-feira</p>
+              <h3 className="font-headline text-2xl font-bold mb-6 tracking-tight">12 de Outubro</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold uppercase tracking-wider opacity-70">Ganhos</span>
+                  <span className="font-headline text-lg font-bold">+ R$ 1.240,00</span>
+                </div>
+                <div className="h-px bg-white/15" />
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold uppercase tracking-wider opacity-70">Gastos</span>
+                  <span className="font-headline text-lg font-bold">- R$ 342,12</span>
+                </div>
+              </div>
+            </div>
 
-<div className="bg-surface-container-low rounded-[24px] p-6">
-<p className="text-xs font-bold uppercase tracking-widest text-outline mb-4">Saúde Diária</p>
-<div className="w-full h-6 bg-surface-container-high rounded-full overflow-hidden flex">
-<div className="h-full bg-secondary-fixed-dim" style={{ width: '75%' }}></div>
-<div className="h-full bg-tertiary-fixed-dim" style={{ width: '25%' }}></div>
-</div>
-<div className="flex justify-between mt-3">
-<span className="text-[10px] font-bold text-secondary">SOBRA</span>
-<span className="text-[10px] font-bold text-tertiary">GASTO</span>
-</div>
-</div>
-</div>
-</div>
+            {/* Saúde diária */}
+            <div className="bg-surface-container-lowest rounded-2xl p-6 editorial-shadow">
+              <p className="text-xs font-bold uppercase tracking-widest text-outline mb-4">Saúde Diária</p>
+              <div className="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden flex">
+                <div className="h-full bg-income rounded-full" style={{ width: '75%' }} />
+                <div className="h-full bg-expense rounded-full" style={{ width: '25%' }} />
+              </div>
+              <div className="flex justify-between mt-3">
+                <span className="text-[10px] font-bold text-income uppercase tracking-wide">Sobra</span>
+                <span className="text-[10px] font-bold text-expense uppercase tracking-wide">Gasto</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<section className="mt-12 mb-20">
-<div className="flex items-center justify-between mb-6">
-<h2 className="font-headline text-2xl font-bold text-on-surface">Registros de 12 de Outubro</h2>
-<Link to="/nova-transacao" className="flex items-center gap-2 text-primary font-bold text-sm cursor-pointer">
-<span className="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
-                    Adicionar Registro
-                </Link>
-</div>
-<div className="space-y-4">
+        {/* Registros do dia */}
+        <section className="mt-10">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-headline text-xl font-bold text-on-surface">Registros de 12 de Outubro</h2>
+            <Link to="/nova-transacao" className="flex items-center gap-1.5 text-primary font-bold text-sm hover:underline underline-offset-2">
+              <span className="material-symbols-outlined text-lg">add_circle</span>
+              Adicionar Registro
+            </Link>
+          </div>
+          <div className="space-y-3">
 
-<div className="flex items-center justify-between bg-surface-container-lowest p-5 rounded-[24px] hover:bg-surface-container-low transition-all cursor-pointer">
-<div className="flex items-center gap-5">
-<div className="w-14 h-14 rounded-2xl bg-secondary-fixed/20 flex items-center justify-center text-secondary">
-<span className="material-symbols-outlined text-3xl" data-icon="payments">payments</span>
-</div>
-<div>
-<h4 className="font-inter font-bold text-on-surface">Pagamento Freelance</h4>
-<p className="text-sm font-medium text-on-surface-variant">Cliente: Studio Fluid</p>
-</div>
-</div>
-<div className="text-right">
-<p className="font-headline font-bold text-lg text-secondary">+ R$ 1.240,00</p>
-<p className="text-[10px] font-bold text-outline uppercase tracking-widest">09:12 AM</p>
-</div>
-</div>
+            <div className="flex items-center justify-between bg-surface-container-lowest p-5 rounded-2xl hover:bg-surface-container-low transition-all cursor-pointer editorial-shadow">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-income-container flex items-center justify-center text-income shrink-0">
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>payments</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-on-surface">Pagamento Freelance</h4>
+                  <p className="text-sm font-medium text-on-surface-variant mt-0.5">Cliente: Studio Fluid</p>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="font-headline font-bold text-base text-income">+ R$ 1.240,00</p>
+                <p className="text-[10px] font-bold text-outline uppercase tracking-widest">09:12 AM</p>
+              </div>
+            </div>
 
-<div className="flex items-center justify-between bg-surface-container-lowest p-5 rounded-[24px] hover:bg-surface-container-low transition-all cursor-pointer">
-<div className="flex items-center gap-5">
-<div className="w-14 h-14 rounded-2xl bg-tertiary-fixed/20 flex items-center justify-center text-tertiary">
-<span className="material-symbols-outlined text-3xl" data-icon="restaurant">restaurant</span>
-</div>
-<div>
-<h4 className="font-inter font-bold text-on-surface">Almoço Cozinha Orgânica</h4>
-<p className="text-sm font-medium text-on-surface-variant">Alimentação &amp; Jantar</p>
-</div>
-</div>
-<div className="text-right">
-<p className="font-headline font-bold text-lg text-tertiary">- R$ 42,12</p>
-<p className="text-[10px] font-bold text-outline uppercase tracking-widest">01:45 PM</p>
-</div>
-</div>
+            <div className="flex items-center justify-between bg-surface-container-lowest p-5 rounded-2xl hover:bg-surface-container-low transition-all cursor-pointer editorial-shadow">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-expense-container flex items-center justify-center text-expense shrink-0">
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>restaurant</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-on-surface">Almoço Cozinha Orgânica</h4>
+                  <p className="text-sm font-medium text-on-surface-variant mt-0.5">Alimentação &amp; Jantar</p>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="font-headline font-bold text-base text-expense">- R$ 42,12</p>
+                <p className="text-[10px] font-bold text-outline uppercase tracking-widest">01:45 PM</p>
+              </div>
+            </div>
 
-<div className="flex items-center justify-between bg-surface-container-lowest p-5 rounded-[24px] hover:bg-surface-container-low transition-all cursor-pointer">
-<div className="flex items-center gap-5">
-<div className="w-14 h-14 rounded-2xl bg-tertiary-fixed/20 flex items-center justify-center text-tertiary">
-<span className="material-symbols-outlined text-3xl" data-icon="shopping_cart">shopping_cart</span>
-</div>
-<div>
-<h4 className="font-inter font-bold text-on-surface">Papelaria Premium</h4>
-<p className="text-sm font-medium text-on-surface-variant">Materiais Acadêmicos</p>
-</div>
-</div>
-<div className="text-right">
-<p className="font-headline font-bold text-lg text-tertiary">- R$ 300,00</p>
-<p className="text-[10px] font-bold text-outline uppercase tracking-widest">04:30 PM</p>
-</div>
-</div>
-</div>
-</section>
-</main>
+            <div className="flex items-center justify-between bg-surface-container-lowest p-5 rounded-2xl hover:bg-surface-container-low transition-all cursor-pointer editorial-shadow">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-expense-container flex items-center justify-center text-expense shrink-0">
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_cart</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-on-surface">Papelaria Premium</h4>
+                  <p className="text-sm font-medium text-on-surface-variant mt-0.5">Materiais Acadêmicos</p>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="font-headline font-bold text-base text-expense">- R$ 300,00</p>
+                <p className="text-[10px] font-bold text-outline uppercase tracking-widest">04:30 PM</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
-<nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl z-50 rounded-t-[24px] shadow-[0_-12px_32px_rgba(72,0,178,0.06)]">
-<Link className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all cursor-pointer" to="/dashboard">
-<span className="material-symbols-outlined" data-icon="home">home</span>
-<span className="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Início</span>
-</Link>
-<Link className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all cursor-pointer" to="/transacoes">
-<span className="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
-<span className="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Atividade</span>
-</Link>
-<Link className="flex flex-col items-center justify-center bg-violet-100 dark:bg-violet-900/40 text-violet-800 dark:text-violet-200 rounded-2xl px-5 py-2.5 scale-90 duration-150 cursor-pointer" to="/calendario">
-<span className="material-symbols-outlined" data-icon="calendar_today" style={{ fontVariationSettings: "'FILL' 1" }}>calendar_today</span>
-<span className="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Calendário</span>
-</Link>
-<a className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
-<span className="material-symbols-outlined" data-icon="analytics">analytics</span>
-<span className="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Análise</span>
-</a>
-<a className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
-<span className="material-symbols-outlined" data-icon="menu">menu</span>
-<span className="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Mais</span>
-</a>
-</nav>
-
+      {/* Bottom Nav */}
+      <nav className="bottom-nav">
+        <Link className="bottom-nav-item" to="/dashboard">
+          <span className="material-symbols-outlined">home</span>
+          <span>Início</span>
+        </Link>
+        <Link className="bottom-nav-item" to="/transacoes">
+          <span className="material-symbols-outlined">receipt_long</span>
+          <span>Atividade</span>
+        </Link>
+        <Link className="bottom-nav-item active" to="/calendario">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>calendar_today</span>
+          <span>Calendário</span>
+        </Link>
+        <Link className="bottom-nav-item" to="/categorias">
+          <span className="material-symbols-outlined">analytics</span>
+          <span>Análise</span>
+        </Link>
+        <a className="bottom-nav-item" href="#">
+          <span className="material-symbols-outlined">menu</span>
+          <span>Mais</span>
+        </a>
+      </nav>
     </>
   );
 }

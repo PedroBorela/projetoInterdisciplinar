@@ -130,10 +130,10 @@ export function Dashboard() {
             {[
               { to: '/calendario', icon: 'calendar_month', label: 'Calendário' },
               { to: '/nova-transacao', icon: 'add_card', label: 'Nova Transação' },
-              { to: '#', icon: 'speed', label: 'Limites' },
-              { to: '#', icon: 'credit_card', label: 'Cartões' },
-              { to: '#', icon: 'horizontal_split', label: 'Parcelas' },
-              { to: '#', icon: 'sync', label: 'Recorrente' },
+              { to: '/limites-gastos', icon: 'speed', label: 'Limites' },
+              { to: '/cartoes', icon: 'credit_card', label: 'Cartões' },
+              { to: '/parcelamentos', icon: 'horizontal_split', label: 'Parcelas' },
+              { to: '/ocorrencias-fixas', icon: 'sync', label: 'Recorrente' },
             ].map(({ to, icon, label }) => (
               <Link
                 key={label}
