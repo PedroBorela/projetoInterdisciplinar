@@ -1,8 +1,10 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { useNavigate } from "react-router-dom";
 
 export function Hero() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -91,13 +93,15 @@ export function Hero() {
                             <span className="gradient-text">riqueza</span>.
                         </h1>
                         <p className="hero-description text-body-md text-on-surface opacity-90 leading-relaxed max-w-md">
-                            O LisoControl é a ferramenta de finanças pessoais de nível profissional projetada
+                            O LisoControl é a ferramenta de finanças pessoais de nível profissional projetada 
                             para gestão precisa de fluxo de caixa e inteligência de crédito.
                         </p>
                     </div>
 
                     <div className="flex flex-wrap gap-4">
-                        <button className="hero-btn btn-primary flex min-w-[188px] cursor-pointer items-center justify-center h-14 px-8 text-title-md shadow-ambient hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+                        <button 
+                            onClick={() => navigate('/login')}
+                            className="hero-btn btn-primary flex min-w-[188px] cursor-pointer items-center justify-center h-14 px-8 text-title-md shadow-ambient hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
                             Teste Grátis 30 Dias
                         </button>
                         <button className="hero-btn btn-secondary flex min-w-[188px] cursor-pointer items-center justify-center gap-2 h-14 px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">

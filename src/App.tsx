@@ -1,27 +1,29 @@
-import { Header } from "./components/Header";
-import { Hero } from "./components/Hero";
-import { Features } from "./components/Features";
-import { CreditIntelligence } from "./components/CreditIntelligence";
-import { StudentsFeatures } from "./components/StudentsFeatures";
-import { TrustSection } from "./components/TrustSection";
-import { Footer } from "./components/Footer";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Landing } from "./pages/Landing";
+import { Login } from "./pages/Login";
+import { Cadastro } from "./pages/Cadastro";
+import { Dashboard } from "./pages/Dashboard";
+import { Transacoes } from "./pages/Transacoes";
+import { NovaTransacao } from "./pages/NovaTransacao";
+import { Categorias } from "./pages/Categorias";
+import { Calendario } from "./pages/Calendario";
 
 function App() {
   return (
-    <div className="bg-surface text-on-surface font-body antialiased relative flex min-h-screen w-full flex-col overflow-x-hidden">
-        <div className="layout-container flex h-full grow flex-col">
-            <Header />
-            <main className="flex-1">
-                <Hero />
-                <Features />
-                <CreditIntelligence />
-                <StudentsFeatures />
-                <TrustSection />
-            </main>
-            <Footer />
-        </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/transacoes" element={<Transacoes />} />
+        <Route path="/nova-transacao" element={<NovaTransacao />} />
+        <Route path="/categorias" element={<Categorias />} />
+        <Route path="/calendario" element={<Calendario />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
-export default App
+export default App;

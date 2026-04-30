@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - The Fluid Scholar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#e8ddff",
+              "surface-container-highest": "#e2e2e4",
+              "on-secondary-container": "#006f64",
+              "surface-bright": "#f9f9fb",
+              "surface-variant": "#e2e2e4",
+              "primary": "#4800b2",
+              "background": "#f9f9fb",
+              "on-secondary-fixed-variant": "#005048",
+              "on-tertiary-container": "#ffb4be",
+              "inverse-on-surface": "#f0f0f2",
+              "tertiary-fixed-dim": "#ffb2bc",
+              "inverse-primary": "#cfbdff",
+              "on-secondary-fixed": "#00201c",
+              "on-surface-variant": "#494456",
+              "on-background": "#1a1c1d",
+              "secondary-container": "#4af8e3",
+              "error-container": "#ffdad6",
+              "secondary": "#006a60",
+              "outline": "#7a7488",
+              "surface-dim": "#d9dadc",
+              "on-tertiary-fixed-variant": "#7e273b",
+              "on-error-container": "#93000a",
+              "on-primary-fixed": "#22005d",
+              "error": "#ba1a1a",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffd9dd",
+              "inverse-surface": "#2f3132",
+              "tertiary": "#711d31",
+              "secondary-fixed-dim": "#17deca",
+              "secondary-fixed": "#4ffbe6",
+              "on-surface": "#1a1c1d",
+              "primary-container": "#6200ee",
+              "on-primary-container": "#d0beff",
+              "surface-container-low": "#f3f3f5",
+              "on-primary-fixed-variant": "#5300cd",
+              "on-secondary": "#ffffff",
+              "surface-container": "#eeeef0",
+              "primary-fixed-dim": "#cfbdff",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-container": "#8f3447",
+              "surface-tint": "#6d23f9",
+              "surface-container-high": "#e8e8ea",
+              "on-tertiary-fixed": "#400013",
+              "outline-variant": "#cbc3d9",
+              "surface": "#f9f9fb",
+              "on-tertiary": "#ffffff",
+              "on-primary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        background-color: #f9f9fb;
+        color: #1a1c1d;
+        font-family: 'Inter', sans-serif;
+      }
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+</head>
+<body class="bg-surface font-body antialiased text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl flex justify-between items-center w-full px-6 py-4">
+<div class="text-xl font-extrabold tracking-tight text-violet-800">The Fluid Scholar</div>
+<div class="flex gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 transition-colors rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-violet-700 font-bold transition-all opacity-80 scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</button>
+</div>
+</nav>
+<main class="pt-24 pb-32 px-6 max-w-2xl mx-auto">
+<header class="mb-10">
+<h1 class="text-3xl font-extrabold font-headline tracking-tight text-on-surface mb-2">Settings</h1>
+<p class="text-on-surface-variant font-medium">Customize your financial workspace.</p>
+</header>
+<!-- Profile Section -->
+<section class="mb-10">
+<div class="bg-surface-container-lowest rounded-xl p-6 flex items-center gap-6">
+<div class="relative group">
+<img class="w-20 h-20 rounded-full object-cover" data-alt="close up portrait of a young man with glasses and creative style, studio lighting, clean soft background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuRpPPOa23iMsNWXoVwLDWNHqrtTIHNPv6lnxJ4vx1XPM5Lg_otgoc0ner2UTUURrRM917xkt-r_oX29u5xQ8Kw_5ytuN43BuzO_SqRaUKGeKjFA-0vsp7A1f33uONAHxPGXY2vq2kmex4OEcjqxw1oNzBx2qmD9n-IJYOYEqTzxB2hT6FBPBEw6JGtrUVweNiMJWYC04vOgq3CIwLOdL7VUDYm1BoT_i5HleN58Bf3Jejkn2XveRybbhA4qZmrMak0nx_I4aEMb0"/>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary p-1.5 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div>
+<h3 class="text-xl font-bold font-headline text-on-surface">Alex Rivera</h3>
+<p class="text-sm text-on-surface-variant mb-3">alex.rivera@scholar.edu</p>
+<button class="text-sm font-semibold text-primary py-1 px-3 bg-primary-fixed rounded-full hover:opacity-80 transition-opacity">
+                        Edit Profile
+                    </button>
+</div>
+</div>
+</section>
+<!-- Preferences Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+<!-- Currency & Balance Card -->
+<div class="bg-surface-container-low rounded-xl p-6 space-y-6">
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Currency Preference</label>
+<div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl">
+<div class="flex items-center gap-3">
+<span class="p-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold">R$</span>
+<span class="font-semibold">Brazilian Real</span>
+</div>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Initial Balance</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl py-4 px-4 font-headline text-lg font-bold focus:ring-2 focus:ring-primary" type="text" value="5.250,00"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant font-bold">R$</span>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-2 px-1 italic">This balance will be your starting point for this month.</p>
+</div>
+</div>
+<!-- Appearance & Data -->
+<div class="bg-surface-container-low rounded-xl p-6 flex flex-col justify-between">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h4 class="font-bold text-on-surface">Dark Mode</h4>
+<p class="text-xs text-on-surface-variant">Switch to the dark side</p>
+</div>
+<div class="w-12 h-6 bg-outline-variant rounded-full p-1 flex items-center">
+<div class="w-4 h-4 bg-white rounded-full shadow-sm translate-x-0 transition-transform"></div>
+</div>
+</div>
+<div class="space-y-3">
+<button class="w-full flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-white/50 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">download</span>
+<span class="font-semibold text-sm">Export Data</span>
+</div>
+<span class="text-[10px] font-bold text-primary bg-primary-fixed px-2 py-0.5 rounded uppercase">CSV / PDF</span>
+</button>
+<button class="w-full flex items-center gap-3 p-4 bg-surface-container-lowest rounded-xl hover:bg-white/50 transition-colors">
+<span class="material-symbols-outlined text-primary">security</span>
+<span class="font-semibold text-sm">Privacy &amp; Security</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Danger Zone -->
+<section class="mt-12 pt-6 border-t border-outline-variant/10">
+<h3 class="text-xs font-bold uppercase tracking-widest text-error mb-4">Danger Zone</h3>
+<div class="bg-error-container/20 rounded-xl p-1">
+<button class="w-full flex items-center justify-between p-5 text-error font-bold rounded-xl hover:bg-error-container/40 transition-all">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-error-container text-on-error-container rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">logout</span>
+</div>
+<span>Sign Out of Account</span>
+</div>
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Version Info -->
+<div class="text-center mt-12 mb-8">
+<p class="text-[10px] font-bold text-outline-variant uppercase tracking-[0.2em]">The Fluid Scholar v2.4.1</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 backdrop-blur-2xl shadow-[0_-12px_32px_rgba(72,0,178,0.06)] rounded-t-[24px] z-50">
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2.5 hover:text-violet-500 transition-all">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2.5 hover:text-violet-500 transition-all">
+<span class="material-symbols-outlined mb-1">receipt_long</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase">Activity</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2.5 hover:text-violet-500 transition-all">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase">Calendar</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2.5 hover:text-violet-500 transition-all">
+<span class="material-symbols-outlined mb-1">analytics</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase">Analytics</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-violet-100 text-violet-800 rounded-2xl px-5 py-2.5 scale-90 duration-150">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">menu</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase">More</span>
+</button>
+</nav>
+</body></html>

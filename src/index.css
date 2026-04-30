@@ -1,19 +1,54 @@
 @import "tailwindcss";
 
 @theme {
+  /* Primary */
   --color-primary: #4800b2;
   --color-primary-container: #6200ee;
   --color-on-primary: #ffffff;
-  --color-surface: #f9f9fb;
-  --color-surface-container-low: #f3f3f5;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-high: #e8e8ea;
-  --color-on-surface: #1a1c1d;
+  --color-on-primary-container: #ffffff;
+  --color-primary-fixed: #e9ddff;
+  --color-on-primary-fixed: #21005d;
+
+  /* Secondary */
   --color-secondary: #4ffbe6;
+  --color-secondary-fixed: #a8f5eb;
+  --color-secondary-fixed-dim: #4cd9c7;
+  --color-secondary-container: #cce8e1;
+  --color-on-secondary-container: #002020;
+
+  /* Tertiary */
   --color-tertiary: #ffb2bc;
-  
+  --color-tertiary-fixed: #ffd8e4;
+  --color-tertiary-fixed-dim: #efb8c8;
+  --color-on-tertiary-fixed: #31101a;
+
+  /* Surface */
+  --color-surface: #f9f9fb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f5;
+  --color-surface-container: #ece6f0;
+  --color-surface-container-high: #e8e8ea;
+  --color-surface-container-highest: #dde2e9;
+
+  /* On Surface */
+  --color-on-surface: #1a1c1d;
+  --color-on-surface-variant: #49454f;
+
+  /* Outline */
+  --color-outline: #79747e;
+  --color-outline-variant: #cac4d0;
+
+  /* Semantic: Income & Expense (WCAG AA contrast on white) */
+  --color-income: #047857;
+  --color-income-container: #d1fae5;
+  --color-expense: #be123c;
+  --color-expense-container: #ffe4e6;
+
+  /* Fonts */
   --font-display: "Manrope", sans-serif;
   --font-body: "Inter", sans-serif;
+  --font-headline: "Manrope", sans-serif;
+  --font-label: "Inter", sans-serif;
 
   --radius-xl: 1.5rem;
 }
@@ -63,6 +98,20 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 12px 32px rgba(72, 0, 178, 0.06);
 }
 
+/* Gradients */
+.editorial-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+}
+
+.primary-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+}
+
+/* Shadows */
+.editorial-shadow {
+  box-shadow: 0 8px 32px rgba(72, 0, 178, 0.10), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
 /* Gradient text utility */
 .gradient-text {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
@@ -101,7 +150,7 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: underline;
 }
 
-/* Float animation for hero cards */
+/* Float animation */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -135,4 +184,48 @@ h1, h2, h3, h4, h5, h6 {
 .gsap-hidden {
   opacity: 0;
   visibility: hidden;
+}
+
+/* Bottom nav base */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.75rem 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 1.5rem 1.5rem 0 0;
+  box-shadow: 0 -12px 32px rgba(72, 0, 178, 0.06);
+  z-index: 50;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  color: var(--color-on-surface-variant);
+  transition: color 0.15s;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  gap: 0.125rem;
+}
+
+.bottom-nav-item:hover {
+  color: var(--color-primary);
+}
+
+.bottom-nav-item.active {
+  background-color: var(--color-primary-fixed);
+  color: var(--color-primary);
+  border-radius: 1rem;
+  transform: scale(0.9);
 }

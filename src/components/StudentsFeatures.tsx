@@ -1,4 +1,4 @@
-﻿import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 export function StudentsFeatures() {
@@ -64,13 +64,13 @@ export function StudentsFeatures() {
                     {/* Left: text */}
                     <div className="order-2 lg:order-1 flex flex-col gap-8">
                         <div className="students-text flex flex-col gap-4">
-                            <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Estudantes</span>
+                            <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Students</span>
                             <h2 className="text-headline-md font-bold text-on-surface leading-tight">
-                                Feito para a Próxima Geração
+                                Built for the Next Generation
                             </h2>
                             <p className="text-body-md text-on-surface opacity-90">
-                                Recursos sob medida para estudantes gerenciarem despesas compartilhadas em
-                                repúblicas e atingirem metas de economia agressivas.
+                                Tailored features for students to manage shared expenses in
+                                dorms and reach aggressive savings goals.
                             </p>
                         </div>
 
@@ -80,9 +80,9 @@ export function StudentsFeatures() {
                                     <span className="material-symbols-outlined text-on-primary text-xl">groups</span>
                                 </div>
                                 <div>
-                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Despesas Compartilhadas</h4>
+                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Shared Expenses</h4>
                                     <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                        Divida contas com colegas de quarto sem estresse e acompanhe quem já pagou.
+                                        Split bills with roommates stress-free and track who has already paid.
                                     </p>
                                 </div>
                             </div>
@@ -92,10 +92,10 @@ export function StudentsFeatures() {
                                     <span className="material-symbols-outlined text-on-primary text-xl">savings</span>
                                 </div>
                                 <div>
-                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Metas Gamificadas</h4>
+                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Gamified Goals</h4>
                                     <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                        Alcance marcos de economia para mensalidades, viagens ou seu primeiro carro com
-                                        recompensas digitais.
+                                        Reach savings milestones for tuition, trips, or your first car with
+                                        digital rewards.
                                     </p>
                                 </div>
                             </div>

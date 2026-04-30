@@ -1,11 +1,11 @@
-﻿import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 const trustItems = [
-    { icon: "lock", label: "Criptografia AES-256" },
-    { icon: "visibility_off", label: "Modo Privacidade" },
-    { icon: "download", label: "Exportação de Dados" },
-    { icon: "verified", label: "Auditoria Semanal" },
+    { icon: "lock", label: "AES-256 Encryption" },
+    { icon: "visibility_off", label: "Privacy Mode" },
+    { icon: "download", label: "Data Export" },
+    { icon: "verified", label: "Weekly Audit" },
 ];
 
 export function TrustSection() {
@@ -45,7 +45,7 @@ export function TrustSection() {
         <section ref={sectionRef} className="py-24 border-none bg-surface">
             <div className="mx-auto max-w-[1200px] px-6 text-center">
                 <h3 className="trust-heading text-label-sm text-on-surface opacity-90 uppercase tracking-[0.2em] font-bold mb-12">
-                    Segurança e Transparência
+                    Security and Transparency
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {trustItems.map((item) => (

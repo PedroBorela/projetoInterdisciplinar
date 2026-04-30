@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Transaction | The Fluid Scholar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed": "#e8ddff",
+            "surface-container-highest": "#e2e2e4",
+            "on-secondary-container": "#006f64",
+            "surface-bright": "#f9f9fb",
+            "surface-variant": "#e2e2e4",
+            "primary": "#4800b2",
+            "background": "#f9f9fb",
+            "on-secondary-fixed-variant": "#005048",
+            "on-tertiary-container": "#ffb4be",
+            "inverse-on-surface": "#f0f0f2",
+            "tertiary-fixed-dim": "#ffb2bc",
+            "inverse-primary": "#cfbdff",
+            "on-secondary-fixed": "#00201c",
+            "on-surface-variant": "#494456",
+            "on-background": "#1a1c1d",
+            "secondary-container": "#4af8e3",
+            "error-container": "#ffdad6",
+            "secondary": "#006a60",
+            "outline": "#7a7488",
+            "surface-dim": "#d9dadc",
+            "on-tertiary-fixed-variant": "#7e273b",
+            "on-error-container": "#93000a",
+            "on-primary-fixed": "#22005d",
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "tertiary-fixed": "#ffd9dd",
+            "inverse-surface": "#2f3132",
+            "tertiary": "#711d31",
+            "secondary-fixed-dim": "#17deca",
+            "secondary-fixed": "#4ffbe6",
+            "on-surface": "#1a1c1d",
+            "primary-container": "#6200ee",
+            "on-primary-container": "#d0beff",
+            "surface-container-low": "#f3f3f5",
+            "on-primary-fixed-variant": "#5300cd",
+            "on-secondary": "#ffffff",
+            "surface-container": "#eeeef0",
+            "primary-fixed-dim": "#cfbdff",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#8f3447",
+            "surface-tint": "#6d23f9",
+            "surface-container-high": "#e8e8ea",
+            "on-tertiary-fixed": "#400013",
+            "outline-variant": "#cbc3d9",
+            "surface": "#f9f9fb",
+            "on-tertiary": "#ffffff",
+            "on-primary": "#ffffff"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .glass-effect {
+      backdrop-filter: blur(12px);
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<nav class="bg-surface/80 dark:bg-slate-900/80 backdrop-blur-xl fixed top-0 w-full z-50 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="text-xl font-extrabold tracking-tight text-violet-800 dark:text-violet-300">The Fluid Scholar</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">notifications</button>
+<button class="material-symbols-outlined p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">account_circle</button>
+</div>
+</nav>
+<main class="pt-24 pb-32 px-6 flex flex-col items-center">
+<div class="w-full max-w-xl">
+<header class="mb-10 text-center">
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2">New Entry</h1>
+<p class="text-on-surface-variant font-medium">Add a new record to your scholar ledger</p>
+</header>
+<div class="space-y-8">
+<div class="bg-surface-container-low p-1 rounded-2xl flex items-center">
+<button class="flex-1 py-3 text-sm font-bold rounded-xl bg-surface-container-lowest text-primary shadow-sm transition-all">Expense</button>
+<button class="flex-1 py-3 text-sm font-bold rounded-xl text-on-surface-variant hover:text-on-surface transition-all">Income</button>
+</div>
+<div class="text-center">
+<label class="block text-label-sm font-semibold text-primary uppercase tracking-widest mb-2">Amount</label>
+<div class="relative inline-block">
+<span class="absolute left-0 top-1/2 -translate-y-1/2 font-headline text-3xl font-bold text-outline-variant">$</span>
+<input class="w-full bg-transparent border-none text-center font-headline text-6xl font-extrabold focus:ring-0 placeholder:text-surface-container-highest tracking-tighter pl-8" placeholder="0.00" type="number"/>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-8 space-y-6 shadow-[0_12px_32px_rgba(72,0,178,0.04)]">
+<div class="space-y-1.5">
+<label class="text-sm font-semibold text-on-surface-variant ml-1">What is this for?</label>
+<input class="w-full px-4 py-4 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary text-on-surface font-medium placeholder:text-outline/50 transition-all" placeholder="e.g., Semester Textbooks" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1.5">
+<label class="text-sm font-semibold text-on-surface-variant ml-1">Category</label>
+<div class="relative group">
+<select class="w-full appearance-none px-4 py-4 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary text-on-surface font-medium cursor-pointer transition-all pr-12">
+<option>Education</option>
+<option>Lifestyle</option>
+<option>Dining</option>
+<option>Transport</option>
+<option>Housing</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined">school</span>
+</div>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-sm font-semibold text-on-surface-variant ml-1">Date</label>
+<div class="relative">
+<input class="w-full px-4 py-4 rounded-xl bg-surface-container-low border-none focus:ring-2 focus:ring-primary text-on-surface font-medium transition-all" type="date" value="2023-10-27"/>
+</div>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-sm font-semibold text-on-surface-variant ml-1">Payment Method (Optional)</label>
+<div class="flex gap-2">
+<button class="flex-1 py-3 px-2 rounded-xl bg-surface-container-low text-xs font-bold text-on-surface hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">credit_card</span>
+                Card
+              </button>
+<button class="flex-1 py-3 px-2 rounded-xl bg-surface-container-low text-xs font-bold text-on-surface hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">payments</span>
+                Cash
+              </button>
+<button class="flex-1 py-3 px-2 rounded-xl bg-surface-container-low text-xs font-bold text-on-surface hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+                Digital
+              </button>
+</div>
+</div>
+<div class="flex items-center justify-between py-2 border-t border-surface-container/50 pt-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Is it an installment?</span>
+<span class="text-xs text-on-surface-variant">Split this cost over several months</span>
+</div>
+<button class="w-12 h-6 bg-surface-container-highest rounded-full relative transition-colors">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<button class="w-full py-5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-lg shadow-lg shadow-primary/20 active:scale-95 transition-all">
+            Save Transaction
+          </button>
+<button class="w-full py-5 rounded-xl bg-surface-container-high text-primary font-bold text-lg hover:bg-surface-container-highest transition-colors active:scale-95">
+            Cancel
+          </button>
+</div>
+</div>
+</div>
+</main>
+<footer class="md:hidden">
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl rounded-t-[24px] shadow-[0_-12px_32px_rgba(72,0,178,0.06)] z-50">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-violet-100 dark:bg-violet-900/40 text-violet-800 dark:text-violet-200 rounded-2xl px-5 py-2.5 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">More</span>
+</a>
+</nav>
+</footer>
+</body></html>

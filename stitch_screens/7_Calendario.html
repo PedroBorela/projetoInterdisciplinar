@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Financial Calendar | The Fluid Scholar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#e8ddff",
+              "surface-container-highest": "#e2e2e4",
+              "on-secondary-container": "#006f64",
+              "surface-bright": "#f9f9fb",
+              "surface-variant": "#e2e2e4",
+              "primary": "#4800b2",
+              "background": "#f9f9fb",
+              "on-secondary-fixed-variant": "#005048",
+              "on-tertiary-container": "#ffb4be",
+              "inverse-on-surface": "#f0f0f2",
+              "tertiary-fixed-dim": "#ffb2bc",
+              "inverse-primary": "#cfbdff",
+              "on-secondary-fixed": "#00201c",
+              "on-surface-variant": "#494456",
+              "on-background": "#1a1c1d",
+              "secondary-container": "#4af8e3",
+              "error-container": "#ffdad6",
+              "secondary": "#006a60",
+              "outline": "#7a7488",
+              "surface-dim": "#d9dadc",
+              "on-tertiary-fixed-variant": "#7e273b",
+              "on-error-container": "#93000a",
+              "on-primary-fixed": "#22005d",
+              "error": "#ba1a1a",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffd9dd",
+              "inverse-surface": "#2f3132",
+              "tertiary": "#711d31",
+              "secondary-fixed-dim": "#17deca",
+              "secondary-fixed": "#4ffbe6",
+              "on-surface": "#1a1c1d",
+              "primary-container": "#6200ee",
+              "on-primary-container": "#d0beff",
+              "surface-container-low": "#f3f3f5",
+              "on-primary-fixed-variant": "#5300cd",
+              "on-secondary": "#ffffff",
+              "surface-container": "#eeeef0",
+              "primary-fixed-dim": "#cfbdff",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-container": "#8f3447",
+              "surface-tint": "#6d23f9",
+              "surface-container-high": "#e8e8ea",
+              "on-tertiary-fixed": "#400013",
+              "outline-variant": "#cbc3d9",
+              "surface": "#f9f9fb",
+              "on-tertiary": "#ffffff",
+              "on-primary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-header {
+        backdrop-filter: blur(20px);
+        background: rgba(249, 249, 251, 0.8);
+      }
+      body {
+        background-color: #f9f9fb;
+        color: #1a1c1d;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-fixed selection:text-primary min-h-screen pb-32">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-6 py-4">
+<div class="text-xl font-extrabold tracking-tight text-violet-800 dark:text-violet-300">The Fluid Scholar</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-4xl mx-auto">
+<!-- Editorial Header -->
+<div class="mb-10">
+<h1 class="font-headline text-4xl font-bold tracking-tight text-on-surface mb-2">Ledger Insights</h1>
+<p class="text-on-surface-variant font-medium">Curating your financial timeline, one entry at a time.</p>
+</div>
+<!-- View Toggle & Date Navigation -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+<div class="flex bg-surface-container-low p-1.5 rounded-2xl">
+<button class="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all bg-surface-container-lowest shadow-sm text-primary">Monthly</button>
+<button class="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all text-on-surface-variant hover:text-primary">Weekly</button>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-2xl">
+<button class="text-primary hover:opacity-70 transition-all">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<span class="font-headline text-lg font-bold min-w-[140px] text-center">October 2023</span>
+<button class="text-primary hover:opacity-70 transition-all">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid: Calendar & Summary -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Calendar Card -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-[24px] p-8 shadow-sm">
+<div class="grid grid-cols-7 gap-y-8 text-center">
+<!-- Day Labels -->
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Mon</div>
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Tue</div>
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Wed</div>
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Thu</div>
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Fri</div>
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Sat</div>
+<div class="text-label-sm font-bold text-outline opacity-50 uppercase tracking-widest pb-4">Sun</div>
+<!-- Calendar Cells -->
+<!-- Row 1 -->
+<div class="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">25</div>
+<div class="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">26</div>
+<div class="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">27</div>
+<div class="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">28</div>
+<div class="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">29</div>
+<div class="flex flex-col items-center justify-center p-2 opacity-30 text-sm font-medium">30</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                        1 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-secondary-fixed-dim"></span></div>
+</div>
+<!-- Row 2 -->
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                        2 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
+</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                        3 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
+</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                        4 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-secondary-fixed-dim"></span><span class="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
+</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                        5 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-tertiary-fixed-dim"></span></div>
+</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">
+                        6 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-secondary-fixed-dim"></span></div>
+</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">7</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">8</div>
+<!-- Selected Day (12th) -->
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">9</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">10</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">11</div>
+<div class="relative flex flex-col items-center justify-center p-2 bg-primary text-on-primary rounded-xl ring-4 ring-primary-fixed ring-opacity-50 text-sm font-bold">
+                        12 <div class="absolute -bottom-1 flex gap-1"><span class="w-1 h-1 rounded-full bg-secondary-fixed"></span><span class="w-1 h-1 rounded-full bg-white"></span></div>
+</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">13</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">14</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">15</div>
+<!-- Row 4+ Simplified -->
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">16</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">17</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">18</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">19</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">20</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">21</div>
+<div class="relative flex flex-col items-center justify-center p-2 text-sm font-bold text-on-surface">22</div>
+</div>
+</div>
+<!-- Day Summary Sidebar -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Selected Day Card -->
+<div class="bg-primary bg-gradient-to-br from-primary to-primary-container rounded-[24px] p-8 text-on-primary shadow-lg">
+<p class="font-headline text-sm font-semibold opacity-80 mb-1">Thursday</p>
+<h3 class="font-headline text-3xl font-bold mb-6 tracking-tight">October 12</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-xs font-semibold uppercase tracking-wider opacity-70">Gains</span>
+<span class="font-headline text-xl font-bold">+$1,240.00</span>
+</div>
+<div class="h-[2px] bg-white/10"></div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-semibold uppercase tracking-wider opacity-70">Losses</span>
+<span class="font-headline text-xl font-bold">-$342.12</span>
+</div>
+</div>
+</div>
+<!-- Goal Progress Visualization (Design System) -->
+<div class="bg-surface-container-low rounded-[24px] p-6">
+<p class="text-xs font-bold uppercase tracking-widest text-outline mb-4">Daily Health</p>
+<div class="w-full h-6 bg-surface-container-high rounded-full overflow-hidden flex">
+<div class="h-full bg-secondary-fixed-dim" style="width: 75%"></div>
+<div class="h-full bg-tertiary-fixed-dim" style="width: 25%"></div>
+</div>
+<div class="flex justify-between mt-3">
+<span class="text-[10px] font-bold text-secondary">SURPLUS</span>
+<span class="text-[10px] font-bold text-tertiary">SPENT</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Transactions Detail List -->
+<section class="mt-12 mb-20">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline text-2xl font-bold text-on-surface">Entries for October 12</h2>
+<button class="flex items-center gap-2 text-primary font-bold text-sm">
+<span class="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
+                    Add Manual Entry
+                </button>
+</div>
+<div class="space-y-4">
+<!-- Transaction Item 1 -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-5 rounded-[24px] hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-secondary-fixed/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl" data-icon="payments">payments</span>
+</div>
+<div>
+<h4 class="font-inter font-bold text-on-surface">Freelance Design Payment</h4>
+<p class="text-sm font-medium text-on-surface-variant">Client: Studio Fluid</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-lg text-secondary">+$1,240.00</p>
+<p class="text-[10px] font-bold text-outline uppercase tracking-widest">09:12 AM</p>
+</div>
+</div>
+<!-- Transaction Item 2 -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-5 rounded-[24px] hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-tertiary-fixed/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-3xl" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<h4 class="font-inter font-bold text-on-surface">Organic Kitchen Lunch</h4>
+<p class="text-sm font-medium text-on-surface-variant">Food &amp; Dining</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-lg text-tertiary">-$42.12</p>
+<p class="text-[10px] font-bold text-outline uppercase tracking-widest">01:45 PM</p>
+</div>
+</div>
+<!-- Transaction Item 3 -->
+<div class="flex items-center justify-between bg-surface-container-lowest p-5 rounded-[24px] hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-tertiary-fixed/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-3xl" data-icon="shopping_cart">shopping_cart</span>
+</div>
+<div>
+<h4 class="font-inter font-bold text-on-surface">Premium Stationery Store</h4>
+<p class="text-sm font-medium text-on-surface-variant">Academic Supplies</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-lg text-tertiary">-$300.00</p>
+<p class="text-[10px] font-bold text-outline uppercase tracking-widest">04:30 PM</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl z-50 rounded-t-[24px] shadow-[0_-12px_32px_rgba(72,0,178,0.06)]">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-violet-100 dark:bg-violet-900/40 text-violet-800 dark:text-violet-200 rounded-2xl px-5 py-2.5 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2.5 hover:text-violet-500 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-inter text-[10px] font-semibold tracking-wide uppercase mt-1">More</span>
+</a>
+</nav>
+</body></html>

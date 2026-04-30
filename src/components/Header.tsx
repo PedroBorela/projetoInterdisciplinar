@@ -1,9 +1,11 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
     const headerRef = useRef<HTMLElement>(null);
     const [scrolled, setScrolled] = useState(false);
+    const navigate = useNavigate();
 
     useLayoutEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -41,6 +43,7 @@ export function Header() {
                         href="#">Preços</a>
                 </nav>
                 <button 
+                    onClick={() => navigate('/login')}
                     className="header-cta cursor-pointer flex items-center justify-center h-11 px-6 bg-[#4800b2] text-white rounded-[1.5rem] font-bold text-[0.875rem] shadow-lg transition-all hover:scale-105 active:scale-95 border-none"
                     style={{ backgroundColor: '#4800b2', color: '#ffffff' }}
                 >

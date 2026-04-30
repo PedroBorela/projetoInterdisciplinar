@@ -1,21 +1,21 @@
-﻿import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 const cards = [
     {
         icon: "notifications_active",
-        title: "Alertas Inteligentes",
-        description: "Seja notificado antes que os juros entrem em vigor ou quando atingir 30% do uso do limite.",
+        title: "Smart Alerts",
+        description: "Get notified before interest kicks in or when you reach 30% of your limit usage.",
     },
     {
         icon: "trending_up",
-        title: "Otimização de Limites",
-        description: "Conselhos baseados em dados sobre os melhores momentos para solicitar aumentos de limite e melhorar seu score.",
+        title: "Limit Optimization",
+        description: "Data-driven advice on the best times to request limit increases and improve your score.",
     },
     {
         icon: "verified_user",
-        title: "Detecção de Fraude",
-        description: "Monitoramento impulsionado por IA para detectar atividades incomuns em frações de segundo.",
+        title: "Fraud Detection",
+        description: "AI-driven monitoring to detect unusual activities in fractions of a second.",
     },
 ];
 
@@ -58,13 +58,13 @@ export function CreditIntelligence() {
 
             <div className="mx-auto max-w-[1200px] px-6 relative">
                 <div className="credit-heading flex flex-col gap-4 mb-16 items-center text-center">
-                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Crédito</span>
+                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Credit</span>
                     <h2 className="text-headline-md font-bold text-on-surface tracking-tight">
-                        Inteligência de Cartão de Crédito
+                        Credit Card Intelligence
                     </h2>
                     <p className="text-body-md text-on-surface opacity-90 max-w-2xl">
-                        Alertas inteligentes e gestão de limites para proteger seu score e otimizar suas
-                        recompensas.
+                        Smart alerts and limit management to protect your score and optimize your
+                        rewards.
                     </p>
                 </div>
 

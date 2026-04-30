@@ -1,4 +1,4 @@
-﻿import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 export function Features() {
@@ -37,13 +37,13 @@ export function Features() {
         <section ref={sectionRef} className="bg-surface-container-low py-24" id="features">
             <div className="mx-auto max-w-[1200px] px-6">
                 <div className="features-heading flex flex-col gap-4 mb-16">
-                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Ferramentas</span>
+                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Tools</span>
                     <h2 className="text-headline-md font-bold text-on-surface tracking-tight">
-                        Domine seu Fluxo de Caixa
+                        Master Your Cash Flow
                     </h2>
                     <p className="text-body-md text-on-surface opacity-90 max-w-2xl">
-                        Visualize seus padrões de gastos com nosso exclusivo Calendário Heatmap, garantindo que
-                        você nunca perca o ritmo em sua gestão de liquidez.
+                        Visualize your spending patterns with our exclusive Heatmap Calendar, ensuring that
+                        you never miss a beat in your liquidity management.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -55,10 +55,10 @@ export function Features() {
                             <span className="material-symbols-outlined text-3xl">calendar_view_month</span>
                         </div>
                         <div>
-                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Calendário Heatmap</h3>
+                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Heatmap Calendar</h3>
                             <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                Mapas de intensidade visual para identificar dias de maior gasto e planejar sua
-                                liquidez semanal com precisão cirúrgica.
+                                Visual intensity maps to identify days of highest spending and plan your
+                                weekly liquidity with surgical precision.
                             </p>
                         </div>
                         <div
@@ -77,10 +77,10 @@ export function Features() {
                             <span className="material-symbols-outlined text-3xl">bolt</span>
                         </div>
                         <div>
-                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Rastreamento em Tempo Real</h3>
+                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Real-Time Tracking</h3>
                             <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                Atualizações instantâneas de cada transação em todas as suas contas,
-                                categorizadas automaticamente por IA.
+                                Instant updates for each transaction across all your accounts,
+                                automatically categorized by AI.
                             </p>
                         </div>
                         <div
