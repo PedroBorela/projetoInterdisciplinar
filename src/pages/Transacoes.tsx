@@ -1,211 +1,241 @@
-import { Link } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { parseISO, getMonth, getYear } from 'date-fns';
+import { TopNavBar } from '../components/TopNavBar';
+import { BottomNavBar } from '../components/BottomNavBar';
+import { EmptyState } from '../components/EmptyState';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useTransacoesStore } from '../stores/useTransacoesStore';
+import { useCategoriasStore } from '../stores/useCategoriasStore';
+import { formatBRL, formatDataRelativa, formatHora } from '../lib/formatters';
+import { calcularTotaisMes, calcularVariacaoMes } from '../lib/calculators';
+import type { Transacao } from '../types';
+
+type FiltroTipo = 'todos' | 'despesa' | 'receita';
 
 export function Transacoes() {
+  const navigate = useNavigate();
+  const { transacoes, remover } = useTransacoesStore();
+  const categorias = useCategoriasStore((s) => s.categorias);
+
+  const [busca, setBusca] = useState('');
+  const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('todos');
+  const [filtroCategoriaId, setFiltroCategoriaId] = useState('');
+  const [filtroMes, setFiltroMes] = useState(true);
+  const [excluindoId, setExcluindoId] = useState<string | null>(null);
+
+  const hoje = new Date();
+  const anoAtual = hoje.getFullYear();
+  const mesAtual = hoje.getMonth() + 1;
+
+  const filtradas = useMemo(() => {
+    let lista = [...transacoes].sort(
+      (a, b) => new Date(b.data).getTime() - new Date(a.data).getTime()
+    );
+
+    if (filtroMes) {
+      lista = lista.filter((t) => {
+        const d = parseISO(t.data);
+        return getYear(d) === anoAtual && getMonth(d) + 1 === mesAtual;
+      });
+    }
+
+    if (busca) {
+      lista = lista.filter((t) =>
+        t.descricao.toLowerCase().includes(busca.toLowerCase())
+      );
+    }
+
+    if (filtroTipo !== 'todos') {
+      lista = lista.filter((t) => t.tipo === filtroTipo);
+    }
+
+    if (filtroCategoriaId) {
+      lista = lista.filter((t) => t.categoriaId === filtroCategoriaId);
+    }
+
+    return lista;
+  }, [transacoes, busca, filtroTipo, filtroCategoriaId, filtroMes, anoAtual, mesAtual]);
+
+  // Agrupar por data
+  const agrupadas = useMemo(() => {
+    const grupos: Record<string, Transacao[]> = {};
+    filtradas.forEach((t) => {
+      const label = formatDataRelativa(t.data);
+      if (!grupos[label]) grupos[label] = [];
+      grupos[label].push(t);
+    });
+    return Object.entries(grupos);
+  }, [filtradas]);
+
+  const { receitas, despesas } = calcularTotaisMes(transacoes, anoAtual, mesAtual);
+  const variacaoDespesa = calcularVariacaoMes(transacoes, anoAtual, mesAtual, 'despesa');
+
+  function getCat(id: string) {
+    return categorias.find((c) => c.id === id);
+  }
+
   return (
     <>
-      <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl flex justify-between items-center px-6 py-4 border-b border-outline-variant/20">
-        <div className="text-xl font-extrabold tracking-tight text-primary font-headline">LisoControl</div>
-        <div className="flex items-center gap-3">
-          <button className="p-2 hover:bg-surface-container-low transition-colors rounded-full text-on-surface-variant">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <button className="p-2 hover:bg-surface-container-low transition-colors rounded-full text-on-surface-variant">
-            <span className="material-symbols-outlined">account_circle</span>
-          </button>
-        </div>
-      </header>
+      <TopNavBar />
 
-      <main className="mt-24 pb-36 px-5 max-w-4xl mx-auto">
+      <main className="pt-28 pb-36 px-5 max-w-3xl mx-auto space-y-6">
+
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-headline text-3xl font-bold tracking-tight text-on-surface">Atividade</h1>
+            <p className="text-on-surface-variant text-sm mt-1">Histórico de transações</p>
+          </div>
+          <Link
+            to="/nova-transacao"
+            className="flex items-center gap-2 px-4 py-2.5 primary-gradient text-on-primary font-bold rounded-xl text-sm"
+          >
+            <span className="material-symbols-outlined text-base">add</span>
+            Nova
+          </Link>
+        </div>
+
+        {/* Insights */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-surface-container-lowest rounded-2xl p-5 editorial-shadow">
+            <p className="text-xs font-label font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Receitas</p>
+            <p className="text-xl font-bold font-headline text-income">{formatBRL(receitas)}</p>
+          </div>
+          <div className="bg-surface-container-lowest rounded-2xl p-5 editorial-shadow">
+            <p className="text-xs font-label font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Despesas</p>
+            <p className="text-xl font-bold font-headline text-expense">{formatBRL(despesas)}</p>
+            {variacaoDespesa !== 0 && (
+              <p className={`text-xs mt-1 font-semibold ${variacaoDespesa > 0 ? 'text-expense' : 'text-income'}`}>
+                {variacaoDespesa > 0 ? '+' : ''}{variacaoDespesa.toFixed(1)}% vs mês anterior
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* Busca */}
-        <section className="mb-7 pt-4">
-          <h1 className="font-headline text-2xl font-bold text-on-surface mb-5 tracking-tight">Livro-Caixa</h1>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-on-surface-variant">
-              <span className="material-symbols-outlined">search</span>
-            </div>
-            <input
-              className="w-full bg-surface-container-lowest rounded-xl py-3.5 pl-12 pr-4 text-on-surface placeholder-outline/60 focus:ring-2 focus:ring-primary transition-all editorial-shadow text-sm"
-              placeholder="Buscar transações, lojas ou categorias..."
-              type="text"
-            />
-          </div>
-        </section>
+        <div className="relative">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar transações..."
+            className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant/50 text-sm editorial-shadow"
+          />
+        </div>
 
         {/* Filtros */}
-        <section className="mb-8 flex flex-nowrap overflow-x-auto gap-2.5 pb-1">
-          <button className="flex items-center gap-2 bg-primary-fixed text-primary px-4 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0">
-            <span className="material-symbols-outlined text-sm">calendar_month</span>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setFiltroMes((v) => !v)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filtroMes ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'}`}
+          >
             Este Mês
           </button>
-          {(['Categorias', 'Tipo', 'Mais Filtros'] as const).map((label, i) => (
-            <button
-              key={label}
-              className="flex items-center gap-2 bg-surface-container-lowest text-on-surface-variant px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0 editorial-shadow"
-            >
-              <span className="material-symbols-outlined text-sm">
-                {i === 0 ? 'category' : i === 1 ? 'swap_vert' : 'filter_list'}
-              </span>
-              {label}
-            </button>
-          ))}
-        </section>
-
-        {/* Lista de Transações */}
-        <div className="space-y-10">
-
-          {/* Hoje */}
-          <div>
-            <h3 className="text-xs font-bold text-outline uppercase tracking-widest mb-4 px-1">Hoje, 24 Out</h3>
-            <div className="space-y-2.5">
-
-              <div className="group flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl editorial-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-expense-container flex items-center justify-center text-expense shrink-0">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>restaurant</span>
-                  </div>
-                  <div>
-                    <p className="text-on-surface font-semibold text-sm">Cafeteria Daily Grind</p>
-                    <p className="text-on-surface-variant text-xs font-medium mt-0.5">Alimentação • 09:15 AM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <p className="text-expense font-bold text-base">- R$ 12,50</p>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container">
-                      <span className="material-symbols-outlined text-xl">edit</span>
-                    </button>
-                    <button className="p-2 text-on-surface-variant hover:text-expense transition-colors rounded-lg hover:bg-expense-container">
-                      <span className="material-symbols-outlined text-xl">delete</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl editorial-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-income-container flex items-center justify-center text-income shrink-0">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
-                  </div>
-                  <div>
-                    <p className="text-on-surface font-semibold text-sm">Depósito de Bolsa</p>
-                    <p className="text-on-surface-variant text-xs font-medium mt-0.5">Educação • 12:40 PM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <p className="text-income font-bold text-base">+ R$ 1.200,00</p>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container">
-                      <span className="material-symbols-outlined text-xl">edit</span>
-                    </button>
-                    <button className="p-2 text-on-surface-variant hover:text-expense transition-colors rounded-lg hover:bg-expense-container">
-                      <span className="material-symbols-outlined text-xl">delete</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Ontem */}
-          <div>
-            <h3 className="text-xs font-bold text-outline uppercase tracking-widest mb-4 px-1">Ontem, 23 Out</h3>
-            <div className="space-y-2.5">
-
-              <div className="group flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl editorial-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary shrink-0">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_bag</span>
-                  </div>
-                  <div>
-                    <p className="text-on-surface font-semibold text-sm">Livraria do Campus</p>
-                    <p className="text-on-surface-variant text-xs font-medium mt-0.5">Livros • 03:22 PM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <p className="text-expense font-bold text-base">- R$ 84,20</p>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container">
-                      <span className="material-symbols-outlined text-xl">edit</span>
-                    </button>
-                    <button className="p-2 text-on-surface-variant hover:text-expense transition-colors rounded-lg hover:bg-expense-container">
-                      <span className="material-symbols-outlined text-xl">delete</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl editorial-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary shrink-0">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>directions_bus</span>
-                  </div>
-                  <div>
-                    <p className="text-on-surface font-semibold text-sm">Metrô - Recarga Automática</p>
-                    <p className="text-on-surface-variant text-xs font-medium mt-0.5">Transporte • 08:00 AM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <p className="text-expense font-bold text-base">- R$ 40,00</p>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container">
-                      <span className="material-symbols-outlined text-xl">edit</span>
-                    </button>
-                    <button className="p-2 text-on-surface-variant hover:text-expense transition-colors rounded-lg hover:bg-expense-container">
-                      <span className="material-symbols-outlined text-xl">delete</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card de Insights */}
-          <div className="relative overflow-hidden rounded-2xl p-6 primary-gradient text-on-primary editorial-shadow">
-            <div className="relative z-10">
-              <p className="text-[10px] uppercase font-bold tracking-widest opacity-70 mb-1">Insights</p>
-              <h4 className="font-headline text-lg font-bold mb-2">Gastos em 'Alimentação' caíram 12%</h4>
-              <p className="text-sm opacity-90 max-w-[80%] leading-relaxed">Bom trabalho! Você economizou R$ 45,20 comparado ao mês passado. Considere mover isso para sua meta.</p>
-            </div>
-            <div className="absolute right-[-20px] bottom-[-20px] opacity-10 pointer-events-none">
-              <span className="material-symbols-outlined text-[160px]">trending_down</span>
-            </div>
-          </div>
-
+          <button
+            onClick={() => setFiltroTipo(filtroTipo === 'despesa' ? 'todos' : 'despesa')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filtroTipo === 'despesa' ? 'bg-expense text-white' : 'bg-surface-container-low text-on-surface-variant'}`}
+          >
+            Despesas
+          </button>
+          <button
+            onClick={() => setFiltroTipo(filtroTipo === 'receita' ? 'todos' : 'receita')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filtroTipo === 'receita' ? 'bg-income text-white' : 'bg-surface-container-low text-on-surface-variant'}`}
+          >
+            Receitas
+          </button>
+          <select
+            value={filtroCategoriaId}
+            onChange={(e) => setFiltroCategoriaId(e.target.value)}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-surface-container-low text-on-surface-variant border-none focus:ring-2 focus:ring-primary cursor-pointer"
+          >
+            <option value="">Todas Categorias</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
         </div>
+
+        {/* Lista */}
+        {filtradas.length === 0 ? (
+          <EmptyState
+            icone="receipt_long"
+            titulo="Nenhuma transação encontrada"
+            descricao="Adicione sua primeira transação para começar a acompanhar seus gastos"
+            acao={{ label: 'Adicionar Transação', onClick: () => navigate('/nova-transacao') }}
+          />
+        ) : (
+          <div className="space-y-6">
+            {agrupadas.map(([data, items]) => (
+              <div key={data}>
+                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">{data}</p>
+                <div className="bg-surface-container-lowest rounded-2xl overflow-hidden editorial-shadow divide-y divide-outline-variant/10">
+                  {items.map((t) => {
+                    const cat = getCat(t.categoriaId);
+                    return (
+                      <div key={t.id} className="px-4 py-4 flex items-center gap-4 hover:bg-surface-container-low transition-colors group">
+                        <div className={`w-11 h-11 rounded-xl ${cat?.corFundo ?? 'bg-surface-container'} flex items-center justify-center shrink-0`}>
+                          <span
+                            className={`material-symbols-outlined text-xl ${cat?.corTexto ?? 'text-on-surface-variant'}`}
+                            style={{ fontVariationSettings: "'FILL' 1" }}
+                          >
+                            {cat?.icone ?? 'receipt'}
+                          </span>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-sm text-on-surface truncate">{t.descricao}</h4>
+                          <p className="text-xs text-on-surface-variant mt-0.5">{cat?.nome ?? 'Sem categoria'} · {formatHora(t.criadoEm)}</p>
+                        </div>
+
+                        <div className="text-right shrink-0 mr-2">
+                          <p className={`font-bold text-sm ${t.tipo === 'receita' ? 'text-income' : 'text-expense'}`}>
+                            {t.tipo === 'receita' ? '+' : '-'} {formatBRL(t.valor)}
+                          </p>
+                          <p className="text-[10px] text-outline uppercase tracking-wide">{t.meioPagamento}</p>
+                        </div>
+
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => navigate(`/nova-transacao?id=${t.id}`)}
+                            className="w-8 h-8 rounded-lg bg-surface-container hover:bg-primary-fixed hover:text-primary flex items-center justify-center transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                          <button
+                            onClick={() => setExcluindoId(t.id)}
+                            className="w-8 h-8 rounded-lg bg-surface-container hover:bg-error-container hover:text-error flex items-center justify-center transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-sm">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
+
+      <BottomNavBar />
 
       {/* FAB */}
       <Link
         to="/nova-transacao"
-        className="fixed right-5 bottom-28 w-14 h-14 primary-gradient text-on-primary rounded-full shadow-[0_12px_32px_rgba(72,0,178,0.25)] flex items-center justify-center z-50 hover:scale-105 active:scale-95 transition-all"
+        className="fixed bottom-28 right-5 w-14 h-14 primary-gradient rounded-full shadow-[0_12px_32px_rgba(72,0,178,0.3)] flex items-center justify-center text-white z-50 hover:scale-110 active:scale-95 transition-all"
       >
         <span className="material-symbols-outlined text-2xl">add</span>
       </Link>
 
-      {/* Bottom Nav */}
-      <nav className="bottom-nav">
-        <Link className="bottom-nav-item" to="/dashboard">
-          <span className="material-symbols-outlined">home</span>
-          <span>Início</span>
-        </Link>
-        <Link className="bottom-nav-item active" to="/transacoes">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>receipt_long</span>
-          <span>Atividade</span>
-        </Link>
-        <Link className="bottom-nav-item" to="/calendario">
-          <span className="material-symbols-outlined">calendar_today</span>
-          <span>Calendário</span>
-        </Link>
-        <Link className="bottom-nav-item" to="/categorias">
-          <span className="material-symbols-outlined">analytics</span>
-          <span>Análise</span>
-        </Link>
-        <a className="bottom-nav-item" href="#">
-          <span className="material-symbols-outlined">menu</span>
-          <span>Mais</span>
-        </a>
-      </nav>
+      {excluindoId && (
+        <ConfirmDialog
+          mensagem={`Excluir a transação "${transacoes.find((t) => t.id === excluindoId)?.descricao}"?`}
+          onConfirmar={() => { remover(excluindoId); setExcluindoId(null); }}
+          onCancelar={() => setExcluindoId(null)}
+        />
+      )}
     </>
   );
 }

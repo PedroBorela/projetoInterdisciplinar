@@ -44,6 +44,22 @@
   --color-expense: #be123c;
   --color-expense-container: #ffe4e6;
 
+  /* Error (UI validation/danger states) */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+
+  /* Warning (near-limit states) */
+  --color-warning: #b45309;
+  --color-warning-container: #fef3c7;
+  --color-on-warning-container: #78350f;
+
+  /* Missing surface / tertiary tokens */
+  --color-surface-bright: #ffffff;
+  --color-tertiary-container: #ffd8e4;
+  --color-on-secondary-fixed-variant: #1d5b55;
+
   /* Fonts */
   --font-display: "Quicksand", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -227,5 +243,38 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--color-primary-fixed);
   color: var(--color-primary);
   border-radius: 1rem;
-  transform: scale(0.9);
+}
+
+/* Card gradients for credit card visuals */
+.card-gradient-primary {
+  background: linear-gradient(135deg, #1a0050 0%, #4800b2 55%, #6200ee 100%);
+}
+
+.card-gradient-secondary {
+  background: linear-gradient(135deg, #003d36 0%, #005c50 55%, #047857 100%);
+}
+
+/* Glass morphism for card action buttons */
+.card-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 0.5rem;
+}
+
+/* gradient-btn alias (maps to primary gradient) */
+.gradient-btn {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+  color: var(--color-on-primary);
+}
+
+/* Hide scrollbars */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

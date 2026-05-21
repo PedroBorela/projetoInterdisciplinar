@@ -1,180 +1,285 @@
+import { useState, useEffect } from 'react';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
+import { useTransacoesStore } from '../stores/useTransacoesStore';
+import { useCategoriasStore } from '../stores/useCategoriasStore';
+import { useLimitesStore } from '../stores/useLimitesStore';
+import { calcularTotaisMes } from '../lib/calculators';
+import { formatBRL, nomeMes } from '../lib/formatters';
 
 export function LimitesDeGastos() {
+  const [dataReferencia, setDataReferencia] = useState(new Date());
+  const mes = dataReferencia.getMonth() + 1;
+  const ano = dataReferencia.getFullYear();
+
+  const transacoes = useTransacoesStore((s) => s.transacoes);
+  const categorias = useCategoriasStore((s) => s.categorias);
+  const { limites, salvar } = useLimitesStore();
+
+  const [valoresLocais, setValoresLocais] = useState<Record<string, number>>({});
+  const [mensagemSucesso, setMensagemSucesso] = useState('');
+
+  // Sync store values to local state when month/year changes
+  useEffect(() => {
+    const novosValores: Record<string, number> = {};
+    categorias.forEach((cat) => {
+      const limiteExistente = limites.find(
+        (l) => l.categoriaId === cat.id && l.mes === mes && l.ano === ano
+      );
+      novosValores[cat.id] = limiteExistente?.valorLimite ?? 0;
+    });
+    setValoresLocais(novosValores);
+    setMensagemSucesso('');
+  }, [categorias, limites, mes, ano]);
+
+  const navegarMes = (offset: number) => {
+    setDataReferencia((prev) => {
+      const d = new Date(prev);
+      d.setMonth(d.getMonth() + offset);
+      return d;
+    });
+  };
+
+  // Calculations based on local values (so they update in real-time as user types)
+  const tetoMensal = Object.values(valoresLocais).reduce((acc, val) => acc + val, 0);
+  
+  const { transacoes: transacoesMes } = calcularTotaisMes(transacoes, ano, mes);
+  const despesasMes = transacoesMes.filter((t) => t.tipo === 'despesa');
+  const gastoAteAgora = despesasMes.reduce((acc, t) => acc + t.valor, 0);
+
+  const percentualGasto = tetoMensal > 0 ? Math.min((gastoAteAgora / tetoMensal) * 100, 100) : 0;
+  const restantes = tetoMensal - gastoAteAgora;
+
+  const handleInputChange = (categoriaId: string, val: string) => {
+    const num = parseFloat(val) || 0;
+    setValoresLocais((prev) => ({
+      ...prev,
+      [categoriaId]: num >= 0 ? num : 0,
+    }));
+  };
+
+  const handleSalvar = () => {
+    Object.entries(valoresLocais).forEach(([catId, valor]) => {
+      salvar(catId, valor, mes, ano);
+    });
+    setMensagemSucesso('Limites atualizados com sucesso!');
+    setTimeout(() => setMensagemSucesso(''), 4000);
+  };
+
   return (
     <>
-
-<TopNavBar />
-{/*  Main Content  */}
-<main className="pt-24 px-6 max-w-2xl mx-auto">
-<header className="mb-10">
-<h1 className="text-2xl font-bold font-headline tracking-tight text-on-surface mb-2">Spending Limits</h1>
-<p className="text-sm font-medium text-on-surface-variant leading-relaxed">
-                Curate your monthly budget by setting boundaries for each category. We'll alert you when you're nearing your limit.
+      <TopNavBar />
+      <main className="pt-24 pb-36 px-5 max-w-2xl mx-auto">
+        <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold font-headline tracking-tight text-on-surface mb-1.5">
+              Limites de Gastos
+            </h1>
+            <p className="text-sm font-medium text-on-surface-variant leading-relaxed">
+              Organize seu orçamento mensal definindo limites por categoria.
             </p>
-</header>
-{/*  Overall Summary Bento Section  */}
-<section className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-8">
-<div className="md:col-span-12 bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_rgba(72,0,178,0.06)] flex flex-col justify-center">
-<div className="flex justify-between items-end mb-4">
-<div>
-<span className="text-xs font-bold uppercase tracking-widest text-primary/60 block mb-1">Monthly Ceiling</span>
-<span className="text-3xl font-extrabold font-headline tracking-tighter text-primary">$2,450.00</span>
-</div>
-<div className="text-right">
-<span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">Spent So Far</span>
-<span className="text-xl font-bold font-headline text-on-surface">$1,892.40</span>
-</div>
-</div>
-<div className="h-6 w-full bg-surface-container rounded-full overflow-hidden flex">
-<div className="h-full bg-primary" style={{ width: '77%' }}></div>
-</div>
-</div>
-</section>
-{/*  Categories List  */}
-<section className="space-y-6">
-<h2 className="text-lg font-bold font-headline flex items-center gap-2 mb-4">
-<span className="material-symbols-outlined text-primary">category</span>
-                Category Breakdown
-            </h2>
-{/*  Food & Drinks - Near Limit (Warning State)  */}
-<div className="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01]">
-<div className="flex justify-between items-start mb-6">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-<span className="material-symbols-outlined text-orange-600">restaurant</span>
-</div>
-<div>
-<h3 className="font-bold text-base text-on-surface">Food &amp; Drinks</h3>
-<p className="text-xs text-on-surface-variant">82% of limit reached</p>
-</div>
-</div>
-<div className="text-right">
-<label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">Limit ($)</label>
-<input className="w-20 bg-surface-container-low border-none rounded-lg text-sm font-bold text-primary focus:ring-2 focus:ring-primary text-right py-1 px-2" type="number" value="600"/>
-</div>
-</div>
-<div className="flex justify-between text-xs font-bold mb-2 px-1">
-<span className="text-on-surface">$492.00 spent</span>
-<span className="text-orange-600">Warning: Low balance</span>
-</div>
-<div className="h-3 w-full bg-surface-container rounded-full overflow-hidden">
-{/*  80%+ Warning: Orange/Yellow  */}
-<div className="h-full bg-orange-500 rounded-full" style={{ width: '82%' }}></div>
-</div>
-</div>
-{/*  Academic Books - Under Limit (Normal State)  */}
-<div className="bg-surface-container-lowest p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
-<div className="flex justify-between items-start mb-6">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center">
-<span className="material-symbols-outlined text-secondary">menu_book</span>
-</div>
-<div>
-<h3 className="font-bold text-base text-on-surface">Academic Material</h3>
-<p className="text-xs text-on-surface-variant">25% of limit reached</p>
-</div>
-</div>
-<div className="text-right">
-<label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">Limit ($)</label>
-<input className="w-20 bg-surface-container-low border-none rounded-lg text-sm font-bold text-primary focus:ring-2 focus:ring-primary text-right py-1 px-2" type="number" value="300"/>
-</div>
-</div>
-<div className="flex justify-between text-xs font-bold mb-2 px-1 text-on-surface">
-<span>$75.00 spent</span>
-<span className="text-secondary">$225.00 left</span>
-</div>
-<div className="h-3 w-full bg-surface-container rounded-full overflow-hidden">
-<div className="h-full bg-secondary-fixed-dim rounded-full" style={{ width: '25%' }}></div>
-</div>
-</div>
-{/*  Subscriptions & Software - Over Limit (Danger State)  */}
-<div className="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-error transition-all duration-300 hover:scale-[1.01]">
-<div className="flex justify-between items-start mb-6">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-error-container flex items-center justify-center">
-<span className="material-symbols-outlined text-error">cloud_done</span>
-</div>
-<div>
-<h3 className="font-bold text-base text-on-surface">Cloud &amp; Software</h3>
-<p className="text-xs text-error font-semibold uppercase tracking-tight">Limit exceeded</p>
-</div>
-</div>
-<div className="text-right">
-<label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">Limit ($)</label>
-<input className="w-20 bg-error-container/40 border-none rounded-lg text-sm font-bold text-error focus:ring-2 focus:ring-error text-right py-1 px-2" type="number" value="120"/>
-</div>
-</div>
-<div className="flex justify-between text-xs font-bold mb-2 px-1">
-<span className="text-on-surface">$144.50 spent</span>
-<span className="text-error">+$24.50 over</span>
-</div>
-<div className="h-3 w-full bg-surface-container rounded-full overflow-hidden">
-{/*  100%+ Danger: Red  */}
-<div className="h-full bg-error rounded-full" style={{ width: '100%' }}></div>
-</div>
-</div>
-{/*  Transportation - Near Limit  */}
-<div className="bg-surface-container-lowest p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
-<div className="flex justify-between items-start mb-6">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
-<span className="material-symbols-outlined text-slate-600">directions_bus</span>
-</div>
-<div>
-<h3 className="font-bold text-base text-on-surface">Commuting</h3>
-<p className="text-xs text-on-surface-variant">54% of limit reached</p>
-</div>
-</div>
-<div className="text-right">
-<label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">Limit ($)</label>
-<input className="w-20 bg-surface-container-low border-none rounded-lg text-sm font-bold text-primary focus:ring-2 focus:ring-primary text-right py-1 px-2" type="number" value="200"/>
-</div>
-</div>
-<div className="flex justify-between text-xs font-bold mb-2 px-1 text-on-surface">
-<span>$108.00 spent</span>
-<span>$92.00 left</span>
-</div>
-<div className="h-3 w-full bg-surface-container rounded-full overflow-hidden">
-<div className="h-full bg-primary-fixed-dim rounded-full" style={{ width: '54%' }}></div>
-</div>
-</div>
-{/*  Entertainment - Under Limit  */}
-<div className="bg-surface-container-lowest p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
-<div className="flex justify-between items-start mb-6">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center">
-<span className="material-symbols-outlined text-tertiary">movie</span>
-</div>
-<div>
-<h3 className="font-bold text-base text-on-surface">Entertainment</h3>
-<p className="text-xs text-on-surface-variant">12% of limit reached</p>
-</div>
-</div>
-<div className="text-right">
-<label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">Limit ($)</label>
-<input className="w-20 bg-surface-container-low border-none rounded-lg text-sm font-bold text-primary focus:ring-2 focus:ring-primary text-right py-1 px-2" type="number" value="400"/>
-</div>
-</div>
-<div className="flex justify-between text-xs font-bold mb-2 px-1 text-on-surface">
-<span>$48.00 spent</span>
-<span className="text-secondary">$352.00 left</span>
-</div>
-<div className="h-3 w-full bg-surface-container rounded-full overflow-hidden">
-<div className="h-full bg-tertiary-fixed-dim rounded-full" style={{ width: '12%' }}></div>
-</div>
-</div>
-</section>
-{/*  Call to Action  */}
-<div className="mt-12 mb-20 text-center">
-<button className="gradient-btn text-white px-8 py-4 rounded-xl font-bold font-headline shadow-lg transition-transform active:scale-95">
-                Save All Changes
-            </button>
-</div>
-</main>
-<BottomNavBar />
+          </div>
 
+          {/* Seletor de Mês */}
+          <div className="flex items-center gap-2 self-start sm:self-center bg-surface-container-low p-1.5 rounded-xl border border-outline-variant/20 editorial-shadow">
+            <button
+              onClick={() => navegarMes(-1)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <span className="text-sm font-bold font-headline text-on-surface capitalize px-2 min-w-[100px] text-center">
+              {nomeMes(mes, ano)}
+            </span>
+            <button
+              onClick={() => navegarMes(1)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </header>
+
+        {mensagemSucesso && (
+          <div className="mb-6 bg-income-container text-income text-sm font-semibold p-4 rounded-xl editorial-shadow flex items-center gap-2 animate-fade-in">
+            <span className="material-symbols-outlined text-xl">check_circle</span>
+            {mensagemSucesso}
+          </div>
+        )}
+
+        {/* Resumo Geral */}
+        <section className="mb-8">
+          <div className="bg-surface-container-lowest p-7 rounded-2xl editorial-shadow">
+            <div className="flex justify-between items-end mb-5">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary/60 block mb-1">
+                  Teto Mensal Configurado
+                </span>
+                <span className="text-3xl font-extrabold font-headline tracking-tighter text-primary">
+                  {formatBRL(tetoMensal)}
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">
+                  Gasto Até Agora
+                </span>
+                <span className="text-xl font-bold font-headline text-on-surface">
+                  {formatBRL(gastoAteAgora)}
+                </span>
+              </div>
+            </div>
+            <div className="h-4 w-full bg-surface-container rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  percentualGasto >= 100
+                    ? 'bg-error'
+                    : percentualGasto >= 80
+                    ? 'bg-warning'
+                    : 'primary-gradient'
+                }`}
+                style={{ width: `${percentualGasto}%` }}
+              />
+            </div>
+            <div className="flex justify-between mt-2.5">
+              <span className="text-xs font-semibold text-on-surface-variant">
+                {Math.round(percentualGasto)}% utilizado
+              </span>
+              <span
+                className={`text-xs font-bold ${
+                  restantes < 0 ? 'text-error' : restantes === 0 ? 'text-on-surface-variant' : 'text-primary'
+                }`}
+              >
+                {restantes < 0
+                  ? `${formatBRL(Math.abs(restantes))} excedidos`
+                  : `${formatBRL(restantes)} restantes`}
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Categorias */}
+        <section className="space-y-4">
+          <h2 className="text-base font-bold font-headline flex items-center gap-2 text-on-surface mb-2">
+            <span className="material-symbols-outlined text-primary text-xl">category</span>
+            Detalhamento por Categoria
+          </h2>
+
+          {categorias.map((cat) => {
+            const gasto = despesasMes
+              .filter((t) => t.categoriaId === cat.id)
+              .reduce((s, t) => s + t.valor, 0);
+            const limite = valoresLocais[cat.id] ?? 0;
+            const pct = limite > 0 ? (gasto / limite) * 100 : 0;
+            const rest = limite - gasto;
+
+            let borderClass = 'border-transparent';
+            let bgIconContainer = cat.corFundo || 'bg-surface-container';
+            let textIcon = cat.corTexto || 'text-primary';
+            let labelStatus = '';
+            let textStatusClass = 'text-on-surface-variant';
+            let barColor = 'primary-gradient';
+
+            if (limite > 0) {
+              if (pct >= 100) {
+                borderClass = 'border-l-4 border-error';
+                bgIconContainer = 'bg-error-container';
+                textIcon = 'text-error';
+                labelStatus = 'Limite excedido';
+                textStatusClass = 'text-error font-semibold uppercase tracking-tight';
+                barColor = 'bg-error';
+              } else if (pct >= 80) {
+                borderClass = 'border-l-4 border-warning';
+                bgIconContainer = 'bg-warning-container';
+                textIcon = 'text-warning';
+                labelStatus = 'Atenção: saldo baixo';
+                textStatusClass = 'text-warning font-semibold';
+                barColor = 'bg-warning';
+              }
+            }
+
+            return (
+              <div
+                key={cat.id}
+                className={`bg-surface-container-lowest p-6 rounded-2xl editorial-shadow transition-all ${borderClass}`}
+              >
+                <div className="flex justify-between items-start mb-5">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${bgIconContainer}`}
+                    >
+                      <span
+                        className={`material-symbols-outlined text-xl ${textIcon}`}
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                      >
+                        {cat.icone}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-base text-on-surface">{cat.nome}</h3>
+                      {limite > 0 ? (
+                        <p className={`text-xs ${textStatusClass}`}>
+                          {labelStatus || `${Math.round(pct)}% do limite atingido`}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-on-surface-variant italic">Sem limite definido</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                      Limite (R$)
+                    </label>
+                    <input
+                      className={`w-24 bg-surface-container-low border-none rounded-lg text-sm font-bold text-right py-1.5 px-2 focus:ring-2 ${
+                        pct >= 100
+                          ? 'text-error bg-error-container/40 focus:ring-error'
+                          : 'text-primary focus:ring-primary'
+                      }`}
+                      type="number"
+                      min="0"
+                      value={limite || ''}
+                      placeholder="0,00"
+                      onChange={(e) => handleInputChange(cat.id, e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-between text-xs font-semibold mb-2">
+                  <span className="text-on-surface">{formatBRL(gasto)} gastos</span>
+                  {limite > 0 && (
+                    <span className={pct >= 100 ? 'text-error' : pct >= 80 ? 'text-warning' : 'text-income'}>
+                      {rest < 0
+                        ? `+ ${formatBRL(Math.abs(rest))} acima`
+                        : `${formatBRL(rest)} restantes`}
+                    </span>
+                  )}
+                </div>
+
+                {limite > 0 && (
+                  <div className="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+                      style={{ width: `${Math.min(pct, 100)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </section>
+
+        {/* CTA */}
+        <div className="mt-10 text-center">
+          <button
+            onClick={handleSalvar}
+            className="primary-gradient text-on-primary px-8 py-4 rounded-xl font-bold font-headline editorial-shadow transition-all active:scale-95 hover:opacity-95"
+          >
+            Salvar Alterações
+          </button>
+        </div>
+      </main>
+      <BottomNavBar />
     </>
   );
 }
+

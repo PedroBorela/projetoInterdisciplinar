@@ -1,252 +1,463 @@
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { parseISO, getMonth, getYear, subMonths } from 'date-fns';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
+import { EmptyState } from '../components/EmptyState';
+import { useTransacoesStore } from '../stores/useTransacoesStore';
+import { useCategoriasStore } from '../stores/useCategoriasStore';
+import { useConfigStore } from '../stores/useConfigStore';
+import { useLimitesStore } from '../stores/useLimitesStore';
+import {
+  calcularSaldo,
+  calcularTotaisMes,
+  calcularPorCategoria,
+  calcularFluxoSemanal,
+  calcularVariacaoMes,
+} from '../lib/calculators';
+import { formatBRL, formatData, nomeMes } from '../lib/formatters';
 
 export function Relatorios() {
+  const navigate = useNavigate();
+  const transacoes = useTransacoesStore((s) => s.transacoes);
+  const categorias = useCategoriasStore((s) => s.categorias);
+  const limites = useLimitesStore((s) => s.limites);
+  const { saldoInicial } = useConfigStore();
+
+  // Determinar todos os meses únicos que contêm transações
+  const uniqueMonths = useMemo(() => {
+    const months = new Set<string>();
+    const today = new Date();
+    // Garante que o mês atual esteja sempre presente como opção
+    const currentKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    months.add(currentKey);
+
+    transacoes.forEach((t) => {
+      try {
+        const d = parseISO(t.data);
+        const key = `${getYear(d)}-${String(getMonth(d) + 1).padStart(2, '0')}`;
+        months.add(key);
+      } catch {
+        // ignora datas inválidas
+      }
+    });
+
+    return Array.from(months).sort((a, b) => b.localeCompare(a));
+  }, [transacoes]);
+
+  // Mês selecionado no dropdown (padrão = mês atual / mais recente)
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(uniqueMonths[0] || '');
+
+  const { ano, mes } = useMemo(() => {
+    if (!selectedMonthKey) {
+      const today = new Date();
+      return { ano: today.getFullYear(), mes: today.getMonth() + 1 };
+    }
+    const [y, m] = selectedMonthKey.split('-');
+    return { ano: parseInt(y), mes: parseInt(m) };
+  }, [selectedMonthKey]);
+
+  // Cálculos do mês selecionado
+  const totaisMes = useMemo(() => {
+    return calcularTotaisMes(transacoes, ano, mes);
+  }, [transacoes, ano, mes]);
+
+  // Patrimônio Total (Saldo acumulado geral até o momento)
+  const patrimonioTotal = useMemo(() => {
+    return calcularSaldo(transacoes, saldoInicial);
+  }, [transacoes, saldoInicial]);
+
+  // Variação percentual de despesas versus mês anterior
+  const variacaoDespesas = useMemo(() => {
+    return calcularVariacaoMes(transacoes, ano, mes, 'despesa');
+  }, [transacoes, ano, mes]);
+
+  // Previsão de Economia (Soma das economias possíveis em categorias com limite)
+  const previsaoEconomia = useMemo(() => {
+    // Para categorias que têm limites definidos, calcula quanto sobrou de orçamento.
+    // Isso representa o potencial de economia do mês.
+    let potencial = 0;
+    const despesasDoMes = transacoes.filter(
+      (t) => t.tipo === 'despesa' && getYear(parseISO(t.data)) === ano && getMonth(parseISO(t.data)) + 1 === mes
+    );
+
+    categorias.forEach((cat) => {
+      const limite = limites.find((l) => l.categoriaId === cat.id && l.mes === mes && l.ano === ano);
+      if (limite && limite.valorLimite > 0) {
+        const gasto = despesasDoMes.filter((t) => t.categoriaId === cat.id).reduce((s, t) => s + t.valor, 0);
+        const sobrou = limite.valorLimite - gasto;
+        if (sobrou > 0) {
+          potencial += sobrou;
+        }
+      }
+    });
+
+    return potencial > 0 ? potencial : Math.max(totaisMes.receitas * 0.15, 100); // fallback padrão de 15% das receitas
+  }, [transacoes, categorias, limites, ano, mes, totaisMes]);
+
+  // Fluxo Semanal
+  const fluxoSemanal = useMemo(() => {
+    return calcularFluxoSemanal(transacoes, ano, mes);
+  }, [transacoes, ano, mes]);
+
+  // Altura máxima para normalizar o gráfico de fluxo semanal
+  const maxSemanaValue = useMemo(() => {
+    const vals = fluxoSemanal.map((w) => Math.max(w.despesas, w.receitas));
+    return Math.max(...vals, 100); // evita divisão por zero
+  }, [fluxoSemanal]);
+
+  // Distribuição por categoria
+  const categoriasDistribuidas = useMemo(() => {
+    return calcularPorCategoria(transacoes, categorias, ano, mes);
+  }, [transacoes, categorias, ano, mes]);
+
+  const totalGastoCategorias = useMemo(() => {
+    return categoriasDistribuidas.reduce((s, c) => s + c.total, 0);
+  }, [categoriasDistribuidas]);
+
+  // Análise Trimestral (últimos 4 meses)
+  const analiseTrimestral = useMemo(() => {
+    const result = [];
+    let current = new Date(ano, mes - 1, 1);
+
+    for (let i = 0; i < 4; i++) {
+      const y = current.getFullYear();
+      const m = current.getMonth() + 1;
+      const t = calcularTotaisMes(transacoes, y, m);
+      const mesLabel = current.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+
+      result.push({
+        label: mesLabel,
+        receitas: t.receitas,
+        despesas: t.despesas,
+        liquido: t.receitas - t.despesas,
+        ano: y,
+        mes: m,
+      });
+
+      current = subMonths(current, 1);
+    }
+
+    return result.reverse(); // colocar em ordem cronológica
+  }, [transacoes, ano, mes]);
+
+  // Altura máxima para normalizar o gráfico trimestral
+  const maxTrimestreValue = useMemo(() => {
+    const vals = analiseTrimestral.map((q) => Math.max(q.receitas, q.despesas));
+    return Math.max(...vals, 100);
+  }, [analiseTrimestral]);
+
+  // Formata chave YYYY-MM para exibição
+  function formatMonthKey(key: string) {
+    if (!key) return '';
+    const [y, m] = key.split('-');
+    const label = nomeMes(parseInt(m), parseInt(y));
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  // Trigger impressão PDF
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <>
+      <TopNavBar />
+      <main className="max-w-7xl mx-auto px-5 pt-24 pb-36 space-y-8 print:pt-6 print:pb-6 print:px-0">
+        {/* Header */}
+        <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 print:flex-row print:items-center">
+          <div className="space-y-1">
+            <h1 className="text-4xl font-headline font-extrabold tracking-tight text-on-surface print:text-2xl">
+              Inteligência Financeira
+            </h1>
+            <p className="text-on-surface-variant font-medium text-sm print:hidden">
+              Curadoria do seu patrimônio com insights orientados a dados.
+            </p>
+          </div>
+          <div className="relative print:hidden">
+            <select
+              value={selectedMonthKey}
+              onChange={(e) => setSelectedMonthKey(e.target.value)}
+              className="appearance-none bg-surface-container-low border-0 ring-1 ring-outline-variant/30 rounded-xl px-6 py-3 pr-12 font-semibold text-primary focus:ring-2 focus:ring-primary cursor-pointer transition-all text-sm"
+            >
+              {uniqueMonths.map((key) => (
+                <option key={key} value={key}>
+                  {formatMonthKey(key)}
+                </option>
+              ))}
+            </select>
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+              expand_more
+            </span>
+          </div>
+          <div className="hidden print:block font-bold text-sm text-outline">
+            Período: {formatMonthKey(selectedMonthKey)}
+          </div>
+        </section>
 
-<TopNavBar />
-<main className="max-w-7xl mx-auto px-6 pt-24 space-y-8">
-{/*  Editorial Header Section  */}
-<section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-<div className="space-y-1">
-<h1 className="text-4xl font-headline font-extrabold tracking-tight text-primary">Financial Intelligence</h1>
-<p className="text-on-surface-variant font-medium">Curating your wealth through data-driven insights.</p>
-</div>
-<div className="relative group">
-<select className="appearance-none bg-surface-container-low border-none rounded-xl px-6 py-3 pr-12 font-semibold text-primary focus:ring-2 focus:ring-primary cursor-pointer transition-all">
-<option>October 2023</option>
-<option>September 2023</option>
-<option>August 2023</option>
-<option>All-time</option>
-</select>
-<span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-primary" data-icon="expand_more">expand_more</span>
-</div>
-</section>
-{/*  Stats Bento Grid  */}
-<section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-{/*  Main Balance Card  */}
-<div className="md:col-span-2 bg-gradient-to-br from-primary to-primary-container p-8 rounded-xl text-on-primary flex flex-col justify-between overflow-hidden relative shadow-[0_12px_32px_rgba(72,0,178,0.06)]">
-<div className="relative z-10">
-<div className="text-on-primary-container/80 text-sm font-semibold uppercase tracking-widest mb-2">Portfolio Value</div>
-<div className="text-5xl font-headline font-extrabold tracking-tighter mb-4">$14,280.45</div>
-<div className="flex items-center gap-2 bg-white/10 w-fit px-3 py-1 rounded-full backdrop-blur-md">
-<span className="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
-<span className="text-xs font-bold">+12.4% vs last month</span>
-</div>
-</div>
-{/*  Abstract Design Element  */}
-<div className="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-</div>
-{/*  Contextual Insight Card  */}
-<div className="bg-secondary-fixed p-8 rounded-xl flex flex-col justify-between shadow-[0_12px_32px_rgba(0,106,96,0.04)]">
-<div>
-<span className="material-symbols-outlined text-secondary text-3xl mb-4" data-icon="auto_awesome">auto_awesome</span>
-<h3 className="text-secondary font-bold text-lg leading-tight">Smart Saver Forecast</h3>
-<p className="text-on-secondary-fixed-variant/70 text-sm mt-2">You're on track to save an extra <span className="font-bold text-secondary">$420</span> this month by optimizing subscriptions.</p>
-</div>
-<button className="mt-6 bg-secondary text-on-secondary py-3 rounded-lg font-bold text-sm transition-all hover:opacity-90">View Optimization</button>
-</div>
-</section>
-{/*  Charts Layout: Asymmetrical Bento  */}
-<section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-{/*  Monthly Spending Line Chart  */}
-<div className="lg:col-span-8 bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/15">
-<div className="flex items-center justify-between mb-8">
-<h2 className="text-xl font-headline font-bold text-on-surface">Monthly Spending Flow</h2>
-<div className="flex gap-4">
-<div className="flex items-center gap-2">
-<div className="w-3 h-3 rounded-full bg-primary"></div>
-<span className="text-xs font-medium text-on-surface-variant">Spending</span>
-</div>
-</div>
-</div>
-<div className="h-[300px] w-full flex items-end justify-between gap-2">
-{/*  Faux Line Chart Bars/Path Visualization  */}
-<div className="flex-1 bg-surface-container-low rounded-t-lg relative group h-[40%]">
-<div className="absolute inset-x-0 bottom-0 bg-primary/20 rounded-t-lg transition-all group-hover:bg-primary/40 h-full"></div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">MON</span>
-</div>
-<div className="flex-1 bg-surface-container-low rounded-t-lg relative group h-[60%]">
-<div className="absolute inset-x-0 bottom-0 bg-primary/20 rounded-t-lg h-full transition-all group-hover:bg-primary/40"></div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">TUE</span>
-</div>
-<div className="flex-1 bg-surface-container-low rounded-t-lg relative group h-[55%]">
-<div className="absolute inset-x-0 bottom-0 bg-primary/20 rounded-t-lg h-full transition-all group-hover:bg-primary/40"></div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">WED</span>
-</div>
-<div className="flex-1 bg-primary rounded-t-lg relative group h-[85%]">
-<div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">$1,240.00</div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">THU</span>
-</div>
-<div className="flex-1 bg-surface-container-low rounded-t-lg relative group h-[45%]">
-<div className="absolute inset-x-0 bottom-0 bg-primary/20 rounded-t-lg h-full transition-all group-hover:bg-primary/40"></div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">FRI</span>
-</div>
-<div className="flex-1 bg-surface-container-low rounded-t-lg relative group h-[30%]">
-<div className="absolute inset-x-0 bottom-0 bg-primary/20 rounded-t-lg h-full transition-all group-hover:bg-primary/40"></div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">SAT</span>
-</div>
-<div className="flex-1 bg-surface-container-low rounded-t-lg relative group h-[35%]">
-<div className="absolute inset-x-0 bottom-0 bg-primary/20 rounded-t-lg h-full transition-all group-hover:bg-primary/40"></div>
-<span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 font-bold">SUN</span>
-</div>
-</div>
-</div>
-{/*  Spendings per Category Doughnut Chart  */}
-<div className="lg:col-span-4 bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col">
-<h2 className="text-xl font-headline font-bold text-on-surface mb-8">Allocation</h2>
-<div className="relative flex-1 flex items-center justify-center">
-{/*  Faux Doughnut Chart  */}
-<div className="w-48 h-48 rounded-full border-[20px] border-surface-container border-t-primary border-r-secondary-fixed border-l-tertiary-container relative flex items-center justify-center">
-<div className="text-center">
-<div className="text-2xl font-bold">$4,850</div>
-<div className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Total Out</div>
-</div>
-</div>
-</div>
-<div className="mt-8 space-y-3">
-<div className="flex items-center justify-between">
-<div className="flex items-center gap-2">
-<div className="w-2 h-2 rounded-full bg-primary"></div>
-<span className="text-sm font-medium">Housing</span>
-</div>
-<span className="text-sm font-bold">45%</span>
-</div>
-<div className="flex items-center justify-between">
-<div className="flex items-center gap-2">
-<div className="w-2 h-2 rounded-full bg-secondary-fixed"></div>
-<span className="text-sm font-medium">Lifestyle</span>
-</div>
-<span className="text-sm font-bold">30%</span>
-</div>
-<div className="flex items-center justify-between">
-<div className="flex items-center gap-2">
-<div className="w-2 h-2 rounded-full bg-tertiary-container"></div>
-<span className="text-sm font-medium">Education</span>
-</div>
-<span className="text-sm font-bold">25%</span>
-</div>
-</div>
-</div>
-{/*  Income vs Expenses Bar Chart  */}
-<div className="lg:col-span-12 bg-surface-container-low p-8 rounded-xl overflow-hidden">
-<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-<div>
-<h2 className="text-xl font-headline font-bold text-on-surface">Income vs Expenses</h2>
-<p className="text-sm text-on-surface-variant">Quarterly performance analysis</p>
-</div>
-<div className="flex bg-white rounded-lg p-1 shadow-sm">
-<button className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md">Bar</button>
-<button className="px-4 py-2 text-slate-500 text-xs font-bold rounded-md">Table</button>
-</div>
-</div>
-<div className="grid grid-cols-4 gap-8">
-{/*  Q1  */}
-<div className="space-y-4">
-<div className="h-48 flex items-end gap-2">
-<div className="flex-1 bg-secondary-fixed rounded-t-lg h-[80%]"></div>
-<div className="flex-1 bg-tertiary-fixed-dim rounded-t-lg h-[60%]"></div>
-</div>
-<div className="text-center">
-<div className="text-xs font-bold text-slate-500 uppercase">Quarter 1</div>
-<div className="text-sm font-bold text-secondary">+$1,200 Net</div>
-</div>
-</div>
-{/*  Q2  */}
-<div className="space-y-4">
-<div className="h-48 flex items-end gap-2">
-<div className="flex-1 bg-secondary-fixed rounded-t-lg h-[90%]"></div>
-<div className="flex-1 bg-tertiary-fixed-dim rounded-t-lg h-[75%]"></div>
-</div>
-<div className="text-center">
-<div className="text-xs font-bold text-slate-500 uppercase">Quarter 2</div>
-<div className="text-sm font-bold text-secondary">+$1,450 Net</div>
-</div>
-</div>
-{/*  Q3  */}
-<div className="space-y-4">
-<div className="h-48 flex items-end gap-2">
-<div className="flex-1 bg-secondary-fixed rounded-t-lg h-[70%]"></div>
-<div className="flex-1 bg-tertiary-fixed-dim rounded-t-lg h-[85%]"></div>
-</div>
-<div className="text-center">
-<div className="text-xs font-bold text-slate-500 uppercase">Quarter 3</div>
-<div className="text-sm font-bold text-error">-$450 Net</div>
-</div>
-</div>
-{/*  Q4 (Current)  */}
-<div className="space-y-4">
-<div className="h-48 flex items-end gap-2">
-<div className="flex-1 bg-secondary-fixed rounded-t-lg h-[100%]"></div>
-<div className="flex-1 bg-tertiary-fixed-dim rounded-t-lg h-[40%]"></div>
-</div>
-<div className="text-center">
-<div className="text-xs font-bold text-slate-500 uppercase">Quarter 4</div>
-<div className="text-sm font-bold text-secondary">+$3,200 Net</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-{/*  Ledger Style Detail Section  */}
-<section className="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/15">
-<h2 className="text-xl font-headline font-bold text-on-surface mb-6">Scholar Ledger Transactions</h2>
-<div className="space-y-4">
-{/*  Transaction Item  */}
-<div className="flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors group">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
-<span className="material-symbols-outlined" data-icon="school">school</span>
-</div>
-<div>
-<div className="font-bold">University Tuition</div>
-<div className="text-xs text-on-surface-variant">October 15, 2023 • Education</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-bold text-on-surface">-$1,250.00</div>
-<div className="text-[10px] font-bold text-slate-400 uppercase">Verified</div>
-</div>
-</div>
-{/*  Transaction Item  */}
-<div className="flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors group">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-secondary">
-<span className="material-symbols-outlined" data-icon="work">work</span>
-</div>
-<div>
-<div className="font-bold">Tutoring Services</div>
-<div className="text-xs text-on-surface-variant">October 12, 2023 • Freelance Income</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-bold text-secondary">+$450.00</div>
-<div className="text-[10px] font-bold text-slate-400 uppercase">Pending</div>
-</div>
-</div>
-{/*  Transaction Item  */}
-<div className="flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-colors group">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
-<span className="material-symbols-outlined" data-icon="restaurant">restaurant</span>
-</div>
-<div>
-<div className="font-bold">Student Union Café</div>
-<div className="text-xs text-on-surface-variant">October 10, 2023 • Lifestyle</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-bold text-on-surface">-$12.45</div>
-<div className="text-[10px] font-bold text-slate-400 uppercase">Verified</div>
-</div>
-</div>
-</div>
-<button className="w-full mt-6 py-4 border-2 border-dashed border-outline-variant text-on-surface-variant font-bold rounded-xl hover:bg-surface-container-low transition-all">Download Full Financial Report (PDF)</button>
-</section>
-</main>
-<BottomNavBar />
+        {/* Bento de Stats */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card Patrimônio */}
+          <div className="md:col-span-2 primary-gradient p-8 rounded-2xl text-on-primary flex flex-col justify-between overflow-hidden relative editorial-shadow border border-white/5">
+            <div className="relative z-10">
+              <div className="text-on-primary/80 text-[10px] font-bold uppercase tracking-widest mb-2">Patrimônio Líquido Acumulado</div>
+              <div className="text-5xl font-headline font-extrabold tracking-tighter mb-4">
+                {formatBRL(patrimonioTotal)}
+              </div>
+              <div className="flex items-center gap-2 bg-white/15 w-fit px-3 py-1.5 rounded-full backdrop-blur-md">
+                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  {variacaoDespesas >= 0 ? 'trending_up' : 'trending_down'}
+                </span>
+                <span className="text-[10px] font-bold">
+                  Despesas do mês: {variacaoDespesas >= 0 ? '+' : ''}
+                  {variacaoDespesas.toFixed(1)}% vs mês anterior
+                </span>
+              </div>
+            </div>
+            <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+          </div>
 
+          {/* Previsão de Economia */}
+          <div className="bg-income-container p-8 rounded-2xl flex flex-col justify-between editorial-shadow border border-income/10 print:bg-surface-container-low print:border-outline-variant/20">
+            <div>
+              <span className="material-symbols-outlined text-income text-3xl mb-4 block" style={{ fontVariationSettings: "'FILL' 1" }}>
+                auto_awesome
+              </span>
+              <h3 className="text-income font-bold text-lg leading-tight">Margem de Poupança</h3>
+              <p className="text-on-surface-variant text-sm mt-2 leading-relaxed font-medium">
+                Você tem o potencial de economizar{' '}
+                <span className="font-bold text-income">{formatBRL(previsaoEconomia)}</span> neste ciclo respeitando os limites estabelecidos.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/limites-gastos')}
+              className="mt-6 bg-income text-on-primary py-3 rounded-xl font-bold text-xs transition-all hover:opacity-90 active:scale-95 print:hidden"
+            >
+              Ajustar Orçamentos
+            </button>
+          </div>
+        </section>
+
+        {/* Gráficos */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Fluxo de Gastos Mensal (Semanal) */}
+          <div className="lg:col-span-8 bg-surface-container-lowest p-8 rounded-2xl editorial-shadow border border-outline-variant/15 print:border-outline-variant/30 flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-lg font-headline font-bold text-on-surface">Fluxo de Gastos do Mês</h2>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-income" />
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">Receitas</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">Despesas</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[260px] w-full flex items-end justify-between gap-6 pb-6 pt-4">
+              {fluxoSemanal.map((w) => {
+                const depPct = (w.despesas / maxSemanaValue) * 100;
+                const recPct = (w.receitas / maxSemanaValue) * 100;
+
+                return (
+                  <div key={w.label} className="flex-1 h-full flex flex-col justify-end items-center group relative">
+                    <div className="flex w-full items-end justify-center gap-2 h-full">
+                      {/* Barra Receitas */}
+                      <div className="flex-1 flex flex-col justify-end h-full">
+                        <div
+                          className="w-full bg-income/20 hover:bg-income/30 transition-all rounded-t-md relative flex justify-center group/tooltip"
+                          style={{ height: `${recPct}%` }}
+                        >
+                          <div className="absolute -top-8 bg-on-surface text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                            + {formatBRL(w.receitas)}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Barra Despesas */}
+                      <div className="flex-1 flex flex-col justify-end h-full">
+                        <div
+                          className="w-full primary-gradient hover:opacity-90 transition-all rounded-t-md relative flex justify-center group/tooltip"
+                          style={{ height: `${depPct}%` }}
+                        >
+                          <div className="absolute -top-8 bg-on-surface text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                            - {formatBRL(w.despesas)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="absolute -bottom-6 text-[10px] text-outline font-bold">{w.label === 'S4' ? 'Semana 4+' : `Semana ${w.label.slice(1)}`}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Distribuição por Categoria */}
+          <div className="lg:col-span-4 bg-surface-container-lowest p-8 rounded-2xl editorial-shadow border border-outline-variant/15 print:border-outline-variant/30 flex flex-col">
+            <h2 className="text-lg font-headline font-bold text-on-surface mb-6">Distribuição</h2>
+
+            {categoriasDistribuidas.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
+                <span className="material-symbols-outlined text-outline-variant text-4xl mb-2">pie_chart_outlined</span>
+                <p className="text-xs text-on-surface-variant font-medium">Nenhuma despesa registrada neste mês.</p>
+              </div>
+            ) : (
+              <>
+                <div className="relative flex-1 flex flex-col justify-center items-center py-4">
+                  <div className="w-36 h-36 rounded-full border-[14px] border-surface-container border-t-primary relative flex items-center justify-center shadow-inner">
+                    <div className="text-center p-2">
+                      <div className="text-xl font-headline font-extrabold text-on-surface tracking-tight">
+                        {formatBRL(totalGastoCategorias)}
+                      </div>
+                      <div className="text-[9px] uppercase font-bold text-outline tracking-wider mt-0.5">Total Gasto</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mt-4 overflow-y-auto max-h-[160px] no-scrollbar">
+                  {categoriasDistribuidas.map((item) => {
+                    const pct = totalGastoCategorias > 0 ? (item.total / totalGastoCategorias) * 100 : 0;
+                    return (
+                      <div key={item.categoria.id} className="flex items-center justify-between gap-4 text-xs font-semibold">
+                        <div className="flex items-center gap-2 truncate">
+                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${item.categoria.cor}`} />
+                          <span className="text-on-surface truncate font-medium">{item.categoria.nome}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-on-surface-variant text-[10px]">{formatBRL(item.total)}</span>
+                          <span className="text-primary font-bold">{pct.toFixed(0)}%</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Comparativo Trimestral Receitas x Despesas */}
+          <div className="lg:col-span-12 bg-surface-container-low p-8 rounded-2xl editorial-shadow border border-outline-variant/10 print:border-outline-variant/20 overflow-hidden">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+              <div>
+                <h2 className="text-lg font-headline font-bold text-on-surface">Desempenho no Período</h2>
+                <p className="text-xs text-on-surface-variant font-medium">Comparativo dos últimos 4 meses monitorados</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-4 md:gap-8">
+              {analiseTrimestral.map((q) => {
+                const recHeight = (q.receitas / maxTrimestreValue) * 100;
+                const depHeight = (q.despesas / maxTrimestreValue) * 100;
+                const isPositive = q.liquido >= 0;
+
+                return (
+                  <div key={q.label} className="space-y-4 flex flex-col justify-end h-full pt-4">
+                    <div className="h-32 flex items-end gap-1.5 md:gap-3 justify-center">
+                      {/* Receitas */}
+                      <div
+                        className="w-1/3 bg-income rounded-t-sm hover:opacity-90 transition-all relative flex justify-center group"
+                        style={{ height: `${recHeight}%` }}
+                      >
+                        <div className="absolute -top-8 bg-on-surface text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                          + {formatBRL(q.receitas)}
+                        </div>
+                      </div>
+                      {/* Despesas */}
+                      <div
+                        className="w-1/3 bg-expense rounded-t-sm hover:opacity-90 transition-all relative flex justify-center group"
+                        style={{ height: `${depHeight}%` }}
+                      >
+                        <div className="absolute -top-8 bg-on-surface text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                          - {formatBRL(q.despesas)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-[10px] font-bold text-outline uppercase">{q.label}</div>
+                      <div className={`text-xs font-bold mt-1 ${isPositive ? 'text-income' : 'text-expense'}`}>
+                        {isPositive ? '+' : ''} {formatBRL(q.liquido)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex gap-6 mt-6 border-t border-outline-variant/10 pt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-income" />
+                <span className="text-[10px] font-bold text-on-surface-variant uppercase">Receitas</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-expense" />
+                <span className="text-[10px] font-bold text-on-surface-variant uppercase">Despesas</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Transações do Livro-Caixa */}
+        <section className="bg-surface-container-lowest rounded-2xl p-8 border border-outline-variant/15 print:border-outline-variant/30 editorial-shadow">
+          <h2 className="text-lg font-headline font-bold text-on-surface mb-6">Lançamentos do Período</h2>
+
+          {totaisMes.transacoes.length === 0 ? (
+            <EmptyState
+              icone="history"
+              titulo="Nenhuma transação"
+              descricao="Nenhum ganho ou gasto registrado no mês selecionado."
+              acao={{
+                label: 'Adicionar Transação',
+                onClick: () => navigate('/nova-transacao'),
+              }}
+            />
+          ) : (
+            <>
+              <div className="space-y-2">
+                {totaisMes.transacoes.map((t) => {
+                  const cat = categorias.find((c) => c.id === t.categoriaId);
+                  const isReceita = t.tipo === 'receita';
+
+                  return (
+                    <div
+                      key={t.id}
+                      onClick={() => navigate(`/nova-transacao?id=${t.id}`)}
+                      className="flex items-center justify-between p-4 rounded-xl hover:bg-surface-container-low transition-all cursor-pointer border border-outline-variant/5 bg-surface-container-low/20"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-11 h-11 rounded-xl ${cat?.corFundo || 'bg-surface-container-high'} flex items-center justify-center shrink-0`}>
+                          <span className={`material-symbols-outlined text-xl ${cat?.corTexto || 'text-on-surface-variant'}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                            {cat?.icone || 'receipt'}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-bold text-on-surface text-sm">{t.descricao}</div>
+                          <div className="text-[10px] text-outline font-semibold uppercase tracking-wider mt-0.5">
+                            {formatData(t.data)} • {cat?.nome || 'Geral'}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className={`font-headline font-bold text-sm ${isReceita ? 'text-income' : 'text-expense'}`}>
+                          {isReceita ? '+' : '-'} {formatBRL(t.valor)}
+                        </div>
+                        <div className="text-[9px] font-bold text-outline uppercase tracking-wider mt-0.5">Confirmado</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={handlePrint}
+                className="w-full mt-6 py-4 border-2 border-dashed border-outline-variant text-on-surface-variant font-bold rounded-xl hover:bg-surface-container-low transition-all text-sm cursor-pointer print:hidden"
+              >
+                Gerar Relatório Financeiro (PDF / Imprimir)
+              </button>
+            </>
+          )}
+        </section>
+      </main>
+      <BottomNavBar />
     </>
   );
 }

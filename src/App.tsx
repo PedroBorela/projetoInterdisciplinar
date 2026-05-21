@@ -14,8 +14,20 @@ import { CartoesDeCredito } from "./pages/CartoesDeCredito";
 import { DetalhesDaFatura } from "./pages/DetalhesDaFatura";
 import { Relatorios } from "./pages/Relatorios";
 import { Configuracoes } from "./pages/Configuracoes";
+import { useEffect } from "react";
+import { useConfigStore } from "./stores/useConfigStore";
 
 function App() {
+  const darkMode = useConfigStore((s) => s.darkMode);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
     <BrowserRouter>
       <Routes>
