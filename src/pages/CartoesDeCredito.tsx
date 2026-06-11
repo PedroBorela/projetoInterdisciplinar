@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { useCartoesStore } from '../stores/useCartoesStore';
 import { useTransacoesStore } from '../stores/useTransacoesStore';
 import { formatBRL } from '../lib/formatters';
@@ -25,6 +26,7 @@ export function CartoesDeCredito() {
   // UI state
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmarRemoverId, setConfirmarRemoverId] = useState<string | null>(null);
 
   // Form states
   const [apelido, setApelido] = useState('');
@@ -97,12 +99,14 @@ export function CartoesDeCredito() {
 
   const handleRemover = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Deseja realmente remover este cartão? As transações vinculadas continuarão no histórico.')) {
-      remover(id);
-      if (editingId === id) {
-        resetForm();
-      }
-    }
+    setConfirmarRemoverId(id);
+  };
+
+  const confirmarRemover = () => {
+    if (!confirmarRemoverId) return;
+    remover(confirmarRemoverId);
+    if (editingId === confirmarRemoverId) resetForm();
+    setConfirmarRemoverId(null);
   };
 
   const resetForm = () => {
@@ -310,9 +314,6 @@ export function CartoesDeCredito() {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {cartoes.map((c) => {
-            const utilizado = getCardUtilizado(c.id);
-            const disponivel = Math.max(c.limite - utilizado, 0);
-
             return (
               <div
                 key={c.id}
@@ -454,6 +455,16 @@ export function CartoesDeCredito() {
         )}
       </main>
       <BottomNavBar />
+
+      <ConfirmModal
+        aberto={!!confirmarRemoverId}
+        titulo="Remover cartão"
+        mensagem="Deseja realmente remover este cartão? As transações vinculadas continuarão no histórico."
+        labelConfirmar="Remover"
+        variante="perigo"
+        onConfirmar={confirmarRemover}
+        onCancelar={() => setConfirmarRemoverId(null)}
+      />
     </>
   );
 }

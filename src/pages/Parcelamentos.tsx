@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { useParcelamentosStore } from '../stores/useParcelamentosStore';
 import { useCategoriasStore } from '../stores/useCategoriasStore';
 import { useCartoesStore } from '../stores/useCartoesStore';
@@ -17,6 +18,7 @@ export function Parcelamentos() {
   // UI state
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [confirmarRemoverId, setConfirmarRemoverId] = useState<string | null>(null);
 
   // Form state
   const [descricao, setDescricao] = useState('');
@@ -98,12 +100,14 @@ export function Parcelamentos() {
   };
 
   const handleRemover = (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este parcelamento? Todas as transações associadas serão removidas.')) {
-      remover(id);
-      if (selectedId === id) {
-        setSelectedId(null);
-      }
-    }
+    setConfirmarRemoverId(id);
+  };
+
+  const confirmarRemover = () => {
+    if (!confirmarRemoverId) return;
+    remover(confirmarRemoverId);
+    if (selectedId === confirmarRemoverId) setSelectedId(null);
+    setConfirmarRemoverId(null);
   };
 
   return (
@@ -491,6 +495,16 @@ export function Parcelamentos() {
         </div>
       </main>
       <BottomNavBar />
+
+      <ConfirmModal
+        aberto={!!confirmarRemoverId}
+        titulo="Excluir parcelamento"
+        mensagem="Todas as transações associadas a este parcelamento serão removidas. Esta ação não pode ser desfeita."
+        labelConfirmar="Excluir"
+        variante="perigo"
+        onConfirmar={confirmarRemover}
+        onCancelar={() => setConfirmarRemoverId(null)}
+      />
     </>
   );
 }

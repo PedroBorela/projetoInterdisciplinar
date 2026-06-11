@@ -1,18 +1,27 @@
 import { useState, useEffect } from 'react';
+import writeXlsxFile, { type Cell } from 'write-excel-file/browser';
 import { Link, useNavigate } from 'react-router-dom';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
+import { ConfirmModal } from '../components/ConfirmModal';
+import { Toast } from '../components/Toast';
 import { useConfigStore } from '../stores/useConfigStore';
+import { useAuthStore } from '../stores/useAuthStore';
 import { useTransacoesStore } from '../stores/useTransacoesStore';
 import { useCategoriasStore } from '../stores/useCategoriasStore';
 import { useCartoesStore } from '../stores/useCartoesStore';
+import { useOcorrenciasStore } from '../stores/useOcorrenciasStore';
+import { useParcelamentosStore } from '../stores/useParcelamentosStore';
 
 export function Configuracoes() {
   const navigate = useNavigate();
-  const { nomeUsuario, emailUsuario, saldoInicial, moeda, darkMode, atualizar } = useConfigStore();
+  const logoutFn = useAuthStore((s) => s.logout);
+  const { nomeUsuario, emailUsuario, saldoInicial, moeda, atualizar } = useConfigStore();
   const transacoes = useTransacoesStore((s) => s.transacoes);
   const categorias = useCategoriasStore((s) => s.categorias);
   const cartoes = useCartoesStore((s) => s.cartoes);
+  const ocorrencias = useOcorrenciasStore((s) => s.ocorrencias);
+  const parcelamentos = useParcelamentosStore((s) => s.parcelamentos);
 
   // States para edição do perfil
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +30,12 @@ export function Configuracoes() {
 
   // State para o saldo inicial
   const [saldo, setSaldo] = useState(saldoInicial.toString());
+
+  // Modal de confirmação de logout
+  const [confirmarLogout, setConfirmarLogout] = useState(false);
+
+  // Toast de feedback
+  const [toast, setToast] = useState<{ tipo: 'sucesso' | 'erro'; mensagem: string } | null>(null);
 
   // Sempre sincronizar se mudar no store
   useEffect(() => {
@@ -48,65 +63,105 @@ export function Configuracoes() {
   const handleSaveSaldo = () => {
     const parsed = parseFloat(saldo) || 0;
     atualizar({ saldoInicial: parsed });
-    alert('Saldo inicial atualizado com sucesso!');
+    setToast({ tipo: 'sucesso', mensagem: 'Saldo inicial atualizado com sucesso!' });
   };
 
-  const handleToggleDarkMode = () => {
-    atualizar({ darkMode: !darkMode });
-  };
-
-  const handleExportarCSV = () => {
+  const handleExportarCSV = async () => {
     if (transacoes.length === 0) {
-      alert('Nenhuma transação encontrada para exportar.');
+      setToast({ tipo: 'erro', mensagem: 'Nenhuma transação encontrada para exportar.' });
       return;
     }
 
-    const headers = [
-      'ID',
+    const HEADER_BG = '#4800B2';
+    const HEADER_FG = '#FFFFFF';
+    const ROW_ALT = '#F5F0FF';
+    const ROW_BASE = '#FFFFFF';
+
+    const headerStyle = {
+      fontWeight: 'bold' as const,
+      backgroundColor: HEADER_BG,
+      color: HEADER_FG,
+      align: 'center' as const,
+      borderColor: '#CCCCCC',
+    };
+
+    const headerRow: Cell[] = [
+      'Data de Registro',
+      'Data de Competência',
       'Tipo',
       'Descrição',
       'Valor (R$)',
       'Categoria',
-      'Data',
       'Meio de Pagamento',
-      'Cartão Vinc.',
-      'Criado Em',
-    ];
+      'Cartão Vinculado',
+      'Origem do Lançamento',
+    ].map((value) => ({ value, type: String, ...headerStyle } as Cell));
 
-    const rows = transacoes.map((t) => {
+    const dataRows: Cell[][] = [...transacoes].sort((a, b) => a.data.localeCompare(b.data)).map((t, i) => {
       const cat = categorias.find((c) => c.id === t.categoriaId)?.nome || 'Sem categoria';
       const card = t.cartaoId ? cartoes.find((c) => c.id === t.cartaoId)?.apelido || 'Cartão' : 'N/A';
+
+      let meioPg = 'Outro';
+      if (t.meioPagamento === 'cartao') meioPg = 'Cartão de Crédito';
+      else if (t.meioPagamento === 'dinheiro') meioPg = 'Dinheiro';
+      else if (t.meioPagamento === 'digital') meioPg = 'Digital (Pix/Débito)';
+
+      let origem = 'Normal';
+      if (t.parcelamentoId) {
+        const parc = parcelamentos.find((p) => p.id === t.parcelamentoId);
+        origem = parc ? `Parcelado (${parc.descricao})` : 'Parcelado';
+      } else if (t.ocorrenciaId) {
+        const oco = ocorrencias.find((o) => o.id === t.ocorrenciaId);
+        origem = oco ? `Fixo/Recorrente (${oco.descricao})` : 'Fixo/Recorrente';
+      }
+
+      const dataCompetencia = new Date(t.data + 'T12:00:00');
+      const dataCriacao = t.criadoEm ? new Date(t.criadoEm) : dataCompetencia;
+      const bg = i % 2 === 0 ? ROW_BASE : ROW_ALT;
+      const s = { backgroundColor: bg, borderColor: '#CCCCCC' };
+
       return [
-        t.id,
-        t.tipo === 'receita' ? 'Receita' : 'Despesa',
-        t.descricao,
-        t.valor.toFixed(2),
-        cat,
-        t.data,
-        t.meioPagamento,
-        card,
-        t.criadoEm,
-      ];
+        { value: dataCriacao, type: Date, format: 'dd/mm/yyyy', ...s } as Cell,
+        { value: dataCompetencia, type: Date, format: 'dd/mm/yyyy', ...s } as Cell,
+        { value: t.tipo === 'receita' ? 'Receita' : 'Despesa', type: String, ...s } as Cell,
+        { value: t.descricao, type: String, ...s } as Cell,
+        { value: t.valor, type: Number, format: '#,##0.00', ...s } as Cell,
+        { value: cat, type: String, ...s } as Cell,
+        { value: meioPg, type: String, ...s } as Cell,
+        { value: card, type: String, ...s } as Cell,
+        { value: origem, type: String, ...s } as Cell,
+      ] as Cell[];
     });
 
-    const csvContent =
-      '\uFEFF' +
-      [headers.join(';'), ...rows.map((r) => r.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(';'))].join('\n');
+    const columns = [
+      { width: 18 }, { width: 18 }, { width: 10 }, { width: 36 },
+      { width: 14 }, { width: 20 }, { width: 24 }, { width: 18 }, { width: 32 },
+    ];
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const result = writeXlsxFile([headerRow, ...dataRows], {
+      columns,
+      sheet: 'Livro-Caixa',
+    });
+    const blob = await result.toBlob();
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `lisocontrol_dados_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `lisocontrol_livro_caixa_${new Date().toISOString().slice(0, 10)}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleLogout = () => {
-    if (confirm('Deseja realmente sair da conta? (Sessão simulada)')) {
-      navigate('/');
-    }
+    setConfirmarLogout(true);
+  };
+
+  const confirmarLogoutFn = async () => {
+    setConfirmarLogout(false);
+    await logoutFn();
+    navigate('/');
   };
 
   return (
@@ -260,22 +315,10 @@ export function Configuracoes() {
             </div>
           </div>
 
-          {/* Aparência & Dados */}
-          <div className="bg-surface-container-low rounded-2xl p-6 flex flex-col justify-between editorial-shadow border border-outline-variant/5">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h4 className="font-bold text-on-surface text-sm">Modo Escuro</h4>
-                <p className="text-[11px] text-on-surface-variant font-medium mt-0.5">Mudar para o visual escuro</p>
-              </div>
-              <div
-                onClick={handleToggleDarkMode}
-                className={`w-12 h-6 rounded-full p-1 flex items-center cursor-pointer transition-colors duration-300 ${
-                  darkMode ? 'bg-primary justify-end' : 'bg-outline-variant justify-start'
-                }`}
-              >
-                <div className="w-4 h-4 bg-white rounded-full shadow-sm" />
-              </div>
-            </div>
+          {/* Dados */}
+          <div className="bg-surface-container-low rounded-2xl p-6 flex flex-col justify-center editorial-shadow border border-outline-variant/5">
+            <h4 className="font-bold text-on-surface text-sm mb-1">Exportar Dados</h4>
+            <p className="text-[11px] text-on-surface-variant font-medium mb-5">Exporte seu livro-caixa completo para planilha.</p>
             <div className="space-y-2">
               <button
                 onClick={handleExportarCSV}
@@ -286,7 +329,7 @@ export function Configuracoes() {
                   <span className="font-bold text-xs text-on-surface">Exportar Livro-Caixa</span>
                 </div>
                 <span className="text-[9px] font-extrabold text-primary bg-primary-fixed px-2 py-0.5 rounded uppercase">
-                  CSV
+                  XLSX
                 </span>
               </button>
             </div>
@@ -321,6 +364,23 @@ export function Configuracoes() {
         </div>
       </main>
       <BottomNavBar />
+
+      <ConfirmModal
+        aberto={confirmarLogout}
+        titulo="Sair da conta"
+        mensagem="Deseja realmente sair da conta?"
+        labelConfirmar="Sair"
+        variante="perigo"
+        onConfirmar={confirmarLogoutFn}
+        onCancelar={() => setConfirmarLogout(false)}
+      />
+
+      <Toast
+        visivel={!!toast}
+        tipo={toast?.tipo ?? 'sucesso'}
+        mensagem={toast?.mensagem ?? ''}
+        onFechar={() => setToast(null)}
+      />
     </>
   );
 }

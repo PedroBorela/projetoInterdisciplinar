@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const transacaoSchema = z.object({
   tipo: z.enum(['despesa', 'receita']),
-  valor: z.number({ invalid_type_error: 'Informe um valor' }).positive('Valor deve ser maior que zero'),
+  valor: z.number({ message: 'Informe um valor' }).positive('Valor deve ser maior que zero'),
   descricao: z.string().min(1, 'Descrição obrigatória').max(100),
   categoriaId: z.string().min(1, 'Selecione uma categoria'),
   data: z.string().min(1, 'Selecione uma data'),

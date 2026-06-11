@@ -1,75 +1,90 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Usuario } from '../types';
+import type { User, Session } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
-interface AuthState {
-  usuarios: Usuario[];
-  usuarioLogado: Usuario | null;
-  cadastrar: (nome: string, email: string, senha: string) => { success: boolean; error?: string };
-  login: (email: string, senha: string) => { success: boolean; error?: string };
-  logout: () => void;
-  atualizarPerfil: (dados: { nome: string; email: string }) => void;
+function traduzirErroAuth(msg: string): string {
+  if (msg.includes('only request this after')) {
+    const segundos = msg.match(/(\d+) second/)?.[1] ?? '30';
+    return `Muitas tentativas. Aguarde ${segundos} segundos e tente novamente.`;
+  }
+  if (msg.includes('User already registered')) return 'Este e-mail já está cadastrado.';
+  if (msg.includes('Invalid login credentials')) return 'E-mail ou senha incorretos.';
+  if (msg.includes('Email not confirmed')) return 'Confirme seu e-mail antes de entrar.';
+  if (msg.includes('Password should be')) return 'A senha precisa ter ao menos 6 caracteres.';
+  if (msg.includes('Unable to validate email')) return 'E-mail inválido.';
+  return 'Ocorreu um erro. Tente novamente.';
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      usuarios: [],
-      usuarioLogado: null,
+interface AuthState {
+  usuario: User | null;
+  session: Session | null;
+  loading: boolean;
+  inicializar: () => Promise<() => void>;
+  cadastrar: (nome: string, email: string, senha: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, senha: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  atualizarPerfil: (dados: { nome: string; email: string }) => Promise<void>;
+}
 
-      cadastrar: (nome, email, senha) => {
-        const { usuarios } = get();
-        const existe = usuarios.some((u) => u.email.toLowerCase() === email.toLowerCase());
+export const useAuthStore = create<AuthState>()((set) => ({
+  usuario: null,
+  session: null,
+  loading: true,
 
-        if (existe) {
-          return { success: false, error: 'E-mail já cadastrado' };
-        }
+  inicializar: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    set({ usuario: session?.user ?? null, session, loading: false });
 
-        const novoUsuario: Usuario = {
-          id: crypto.randomUUID(),
-          nome,
-          email,
-          senha, // Simulado
-          criadoEm: new Date().toISOString(),
-        };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      set({ usuario: session?.user ?? null, session });
+    });
 
-        set((s) => ({
-          usuarios: [...s.usuarios, novoUsuario],
-          usuarioLogado: novoUsuario,
-        }));
+    return () => subscription.unsubscribe();
+  },
 
-        return { success: true };
-      },
+  cadastrar: async (nome, email, senha) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: senha,
+      options: { data: { nome } },
+    });
 
-      login: (email, senha) => {
-        const { usuarios } = get();
-        const usuario = usuarios.find(
-          (u) => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha
-        );
+    if (error) return { success: false, error: traduzirErroAuth(error.message) };
+    if (!data.user) return { success: false, error: 'Erro ao criar conta.' };
 
-        if (!usuario) {
-          return { success: false, error: 'E-mail ou senha incorretos' };
-        }
+    // Confirmação de e-mail pendente (padrão em projetos novos do Supabase)
+    if (!data.session) {
+      return {
+        success: false,
+        error: 'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.',
+      };
+    }
 
-        set({ usuarioLogado: usuario });
-        return { success: true };
-      },
+    return { success: true };
+  },
 
-      logout: () => {
-        set({ usuarioLogado: null });
-      },
+  login: async (email, senha) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+    if (error) return { success: false, error: traduzirErroAuth(error.message) };
+    return { success: true };
+  },
 
-      atualizarPerfil: (dados) => {
-        set((s) => {
-          if (!s.usuarioLogado) return s;
-          const atualizado = { ...s.usuarioLogado, ...dados };
-          return {
-            usuarioLogado: atualizado,
-            usuarios: s.usuarios.map((u) => (u.id === s.usuarioLogado?.id ? atualizado : u)),
-          };
-        });
-      },
-    }),
-    { name: 'liso-auth' }
-  )
-);
+  logout: async () => {
+    await supabase.auth.signOut();
+    set({ usuario: null, session: null });
+  },
+
+  atualizarPerfil: async (dados) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from('user_config').upsert({
+      user_id: user.id,
+      nome: dados.nome,
+    });
+
+    if (dados.email !== user.email) {
+      await supabase.auth.updateUser({ email: dados.email });
+    }
+  },
+}));

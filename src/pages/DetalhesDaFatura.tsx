@@ -1,13 +1,16 @@
 import { useState, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { parseISO, getMonth, getYear, getDate } from 'date-fns';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
 import { EmptyState } from '../components/EmptyState';
+import writeXlsxFile, { type Cell } from 'write-excel-file/browser';
 import { useCartoesStore } from '../stores/useCartoesStore';
 import { useTransacoesStore } from '../stores/useTransacoesStore';
 import { useCategoriasStore } from '../stores/useCategoriasStore';
-import { formatBRL, formatData, nomeMes, nomeMesCurto } from '../lib/formatters';
+import { useParcelamentosStore } from '../stores/useParcelamentosStore';
+import { formatBRL, formatData, nomeMes } from '../lib/formatters';
 
 export function DetalhesDaFatura() {
   const navigate = useNavigate();
@@ -18,6 +21,7 @@ export function DetalhesDaFatura() {
   const { editar } = useCartoesStore();
   const transacoes = useTransacoesStore((s) => s.transacoes);
   const categorias = useCategoriasStore((s) => s.categorias);
+  const parcelamentos = useParcelamentosStore((s) => s.parcelamentos);
 
   // Selecionar cartão ativo
   const activeCard = useMemo(() => {
@@ -84,6 +88,7 @@ export function DetalhesDaFatura() {
 
   // Ciclo visualizado no momento (padrão = ciclo atual ou o mais recente disponível)
   const [selectedCycleKey, setSelectedCycleKey] = useState<string>('');
+  const [confirmarPagamento, setConfirmarPagamento] = useState(false);
 
   const activeCycleKey = selectedCycleKey || currentCycleKey || uniqueCycles[0] || '';
 
@@ -155,32 +160,80 @@ export function DetalhesDaFatura() {
   // Ação de pagar fatura
   const handlePagarFatura = () => {
     if (!activeCard || !activeCycleKey || isPago) return;
-    if (confirm(`Deseja marcar a fatura de ${formatCycleKey(activeCycleKey)} no valor de ${formatBRL(totalFatura)} como PAGA?`)) {
-      const faturasPagas = activeCard.faturasPagas || [];
-      editar(activeCard.id, {
-        faturasPagas: [...faturasPagas, activeCycleKey],
-      });
-    }
+    setConfirmarPagamento(true);
   };
 
-  // Exportar transações da fatura selecionada para CSV
-  const handleExportarCSV = () => {
+  const confirmarPagarFatura = () => {
+    if (!activeCard || !activeCycleKey) return;
+    const faturasPagas = activeCard.faturasPagas || [];
+    editar(activeCard.id, { faturasPagas: [...faturasPagas, activeCycleKey] });
+    setConfirmarPagamento(false);
+  };
+
+  // Exportar transações da fatura selecionada para XLSX
+  const handleExportarCSV = async () => {
     if (!activeCard || cycleTransactions.length === 0) return;
-    const headers = ['Data', 'Descrição', 'Categoria', 'Valor (R$)'];
-    const rows = cycleTransactions.map((t) => {
+
+    const HEADER_BG = '#4800B2';
+    const HEADER_FG = '#FFFFFF';
+    const ROW_ALT = '#F5F0FF';
+    const ROW_BASE = '#FFFFFF';
+
+    const headerStyle = {
+      fontWeight: 'bold' as const,
+      backgroundColor: HEADER_BG,
+      color: HEADER_FG,
+      align: 'center' as const,
+      borderColor: '#CCCCCC',
+    };
+
+    const headerRow: Cell[] = [
+      'Data', 'Descrição', 'Categoria', 'Valor (R$)', 'Cartão', 'Fatura', 'Status', 'Origem',
+    ].map((value) => ({ value, type: String, ...headerStyle } as Cell));
+
+    const dataRows: Cell[][] = cycleTransactions.map((t, i) => {
       const catName = categorias.find((c) => c.id === t.categoriaId)?.nome || 'Sem categoria';
-      return [t.data, t.descricao, catName, t.valor.toFixed(2)];
+
+      let origem = 'Normal';
+      if (t.parcelamentoId) {
+        const parc = parcelamentos.find((p) => p.id === t.parcelamentoId);
+        origem = parc ? `Parcelado (${parc.descricao})` : 'Parcelado';
+      }
+
+      const bg = i % 2 === 0 ? ROW_BASE : ROW_ALT;
+      const s = { backgroundColor: bg, borderColor: '#CCCCCC' };
+
+      return [
+        { value: new Date(t.data + 'T12:00:00'), type: Date, format: 'dd/mm/yyyy', ...s } as Cell,
+        { value: t.descricao, type: String, ...s } as Cell,
+        { value: catName, type: String, ...s } as Cell,
+        { value: t.valor, type: Number, format: '#,##0.00', ...s } as Cell,
+        { value: activeCard.apelido, type: String, ...s } as Cell,
+        { value: formatCycleKey(activeCycleKey), type: String, ...s } as Cell,
+        { value: isPago ? 'Paga' : 'Em Aberto', type: String, ...s } as Cell,
+        { value: origem, type: String, ...s } as Cell,
+      ];
     });
 
-    const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const columns = [
+      { width: 14 }, { width: 32 }, { width: 20 }, { width: 14 },
+      { width: 20 }, { width: 16 }, { width: 12 }, { width: 30 },
+    ];
+
+    const result = writeXlsxFile([headerRow, ...dataRows], {
+      columns,
+      sheet: 'Fatura',
+    });
+    const blob = await result.toBlob();
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `fatura_${activeCard.apelido.replace(/\s+/g, '_')}_${activeCycleKey}.csv`;
+    link.download = `fatura_${activeCard.apelido.replace(/\s+/g, '_')}_${activeCycleKey}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Formata chave YYYY-MM para "Mês AAAA"
@@ -363,7 +416,7 @@ export function DetalhesDaFatura() {
                 className="flex items-center gap-1.5 text-primary font-bold text-sm hover:underline underline-offset-2 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-lg">download</span>
-                Baixar CSV
+                Baixar XLSX
               </button>
             )}
           </div>
@@ -420,7 +473,7 @@ export function DetalhesDaFatura() {
         {uniqueCycles.length > 0 && (
           <section>
             <h2 className="font-headline text-xl font-bold mb-6 text-on-surface">Histórico de Faturas</h2>
-            <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar">
+            <div className="flex overflow-x-auto gap-4 py-3 px-1 -mx-1 no-scrollbar">
               {uniqueCycles.map((key) => {
                 const trs = cycleTransactionsMap[key] || [];
                 const val = trs.reduce((sum, t) => sum + t.valor, 0);
@@ -433,7 +486,7 @@ export function DetalhesDaFatura() {
                     onClick={() => setSelectedCycleKey(key)}
                     className={`flex-shrink-0 w-60 p-6 rounded-2xl border transition-all cursor-pointer editorial-shadow ${
                       isSelected
-                        ? 'bg-surface-container-high border-primary ring-2 ring-primary/20 scale-102'
+                        ? 'bg-surface-container-high border-primary ring-2 ring-primary/30'
                         : 'bg-surface-container-lowest border-outline-variant/15 hover:bg-surface-container-low'
                     }`}
                   >
@@ -479,6 +532,15 @@ export function DetalhesDaFatura() {
         </div>
       </main>
       <BottomNavBar />
+
+      <ConfirmModal
+        aberto={confirmarPagamento}
+        titulo="Quitar fatura"
+        mensagem={`Deseja marcar a fatura de ${formatCycleKey(activeCycleKey)} no valor de ${formatBRL(totalFatura)} como paga?`}
+        labelConfirmar="Confirmar pagamento"
+        onConfirmar={confirmarPagarFatura}
+        onCancelar={() => setConfirmarPagamento(false)}
+      />
     </>
   );
 }

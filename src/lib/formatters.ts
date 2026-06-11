@@ -1,6 +1,9 @@
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+/** Arredonda para 2 casas decimais antes de persistir no banco */
+export const d2 = (n: number) => Math.round(n * 100) / 100;
+
 export function formatBRL(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }

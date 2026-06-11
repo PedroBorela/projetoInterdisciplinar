@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { TopNavBar } from '../components/TopNavBar';
 import { BottomNavBar } from '../components/BottomNavBar';
 import { CurrencyInput } from '../components/CurrencyInput';
+import { Toast } from '../components/Toast';
 import { useTransacoesStore } from '../stores/useTransacoesStore';
 import { useCategoriasStore } from '../stores/useCategoriasStore';
 import { useCartoesStore } from '../stores/useCartoesStore';
@@ -30,8 +31,10 @@ export function NovaTransacao() {
   const [tipo, setTipo] = useState<'despesa' | 'receita'>('despesa');
   const [meioPagamento, setMeioPagamento] = useState<'cartao' | 'dinheiro' | 'digital'>('dinheiro');
   const [parcelado, setParcelado] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [toast, setToast] = useState<{ tipo: 'sucesso' | 'erro'; mensagem: string } | null>(null);
 
-  const { register, handleSubmit, control, setValue, watch, reset, formState: { errors } } = useForm<TransacaoForm>({
+  const { register, handleSubmit, control, setValue, reset, formState: { errors } } = useForm<TransacaoForm>({
     resolver: zodResolver(transacaoSchema),
     defaultValues: {
       tipo: 'despesa',
@@ -40,7 +43,7 @@ export function NovaTransacao() {
     },
   });
 
-  const meioPagamentoWatch = watch('meioPagamento');
+
 
   // Carregar dados se editando
   useEffect(() => {
@@ -60,36 +63,56 @@ export function NovaTransacao() {
     });
   }, [editandoId]);
 
-  function onSubmit(dados: TransacaoForm) {
-    if (dados.tipo === 'despesa' && parcelado && dados.numeroParcelas) {
-      useParcelamentosStore.getState().adicionar({
+  async function onSubmit(dados: TransacaoForm) {
+    setSalvando(true);
+
+    try {
+      if (dados.tipo === 'despesa' && parcelado && dados.numeroParcelas) {
+        await useParcelamentosStore.getState().adicionar({
+          descricao: dados.descricao,
+          valorTotal: dados.valor,
+          totalParcelas: dados.numeroParcelas,
+          categoriaId: dados.categoriaId,
+          cartaoId: dados.meioPagamento === 'cartao' ? dados.cartaoId : undefined,
+          dataInicio: dados.data,
+        });
+        setToast({ tipo: 'sucesso', mensagem: 'Parcelamento criado com sucesso!' });
+        setTimeout(() => navigate('/parcelamentos'), 1200);
+        return;
+      }
+
+      const payload = {
+        tipo: dados.tipo,
+        valor: dados.valor,
         descricao: dados.descricao,
-        valorTotal: dados.valor,
-        totalParcelas: dados.numeroParcelas,
         categoriaId: dados.categoriaId,
+        data: dados.data,
+        meioPagamento: dados.meioPagamento,
         cartaoId: dados.meioPagamento === 'cartao' ? dados.cartaoId : undefined,
-        dataInicio: dados.data,
-      });
-      navigate('/parcelamentos');
-      return;
-    }
+      };
 
-    const payload = {
-      tipo: dados.tipo,
-      valor: dados.valor,
-      descricao: dados.descricao,
-      categoriaId: dados.categoriaId,
-      data: dados.data,
-      meioPagamento: dados.meioPagamento,
-      cartaoId: dados.meioPagamento === 'cartao' ? dados.cartaoId : undefined,
-    };
-
-    if (editandoId) {
-      editar(editandoId, payload);
-    } else {
-      adicionar(payload);
+      if (editandoId) {
+        const ok = await editar(editandoId, payload);
+        if (ok) {
+          setToast({ tipo: 'sucesso', mensagem: 'Registro atualizado com sucesso!' });
+          setTimeout(() => navigate('/transacoes'), 1200);
+        } else {
+          setToast({ tipo: 'erro', mensagem: 'Erro ao atualizar. Tente novamente.' });
+        }
+      } else {
+        const nova = await adicionar(payload);
+        if (nova) {
+          setToast({ tipo: 'sucesso', mensagem: 'Transação salva com sucesso!' });
+          setTimeout(() => navigate('/transacoes'), 1200);
+        } else {
+          setToast({ tipo: 'erro', mensagem: 'Erro ao salvar. Verifique sua conexão.' });
+        }
+      }
+    } catch {
+      setToast({ tipo: 'erro', mensagem: 'Erro inesperado. Tente novamente.' });
+    } finally {
+      setSalvando(false);
     }
-    navigate('/transacoes');
   }
 
   return (
@@ -132,8 +155,8 @@ export function NovaTransacao() {
             {/* Valor */}
             <div className="text-center py-4">
               <label className="block text-xs font-semibold text-primary uppercase tracking-widest mb-3">Valor</label>
-              <div className="relative inline-flex items-center gap-2">
-                <span className="font-headline text-3xl font-bold text-on-surface-variant">R$</span>
+              <div className="flex justify-center items-center gap-2">
+                <span className="font-headline text-3xl font-bold text-on-surface-variant shrink-0">R$</span>
                 <Controller
                   name="valor"
                   control={control}
@@ -142,7 +165,7 @@ export function NovaTransacao() {
                       value={field.value}
                       onChange={field.onChange}
                       autoFocus
-                      className="bg-transparent border-none text-center font-headline text-6xl font-extrabold focus:ring-0 placeholder:text-surface-container-high tracking-tighter w-48 text-on-surface"
+                      className="bg-transparent border-none text-center font-headline text-6xl font-extrabold focus:ring-0 placeholder:text-surface-container-high tracking-tighter flex-1 min-w-0 max-w-[260px] text-on-surface"
                     />
                   )}
                 />
@@ -275,14 +298,23 @@ export function NovaTransacao() {
             <div className="flex flex-col gap-3 pt-2">
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl primary-gradient text-on-primary font-bold text-base shadow-lg shadow-primary/20 active:scale-95 transition-all hover:opacity-95"
+                disabled={salvando}
+                className="w-full py-4 rounded-xl primary-gradient text-on-primary font-bold text-base shadow-lg shadow-primary/20 active:scale-95 transition-all hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {editandoId ? 'Salvar Alterações' : 'Salvar Transação'}
+                {salvando ? (
+                  <>
+                    <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+                    Salvando...
+                  </>
+                ) : (
+                  editandoId ? 'Salvar Alterações' : 'Salvar Transação'
+                )}
               </button>
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="w-full py-4 rounded-xl bg-surface-container-high text-on-surface font-semibold text-base hover:bg-surface-container-highest transition-colors active:scale-95"
+                disabled={salvando}
+                className="w-full py-4 rounded-xl bg-surface-container-high text-on-surface font-semibold text-base hover:bg-surface-container-highest transition-colors active:scale-95 disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -292,6 +324,13 @@ export function NovaTransacao() {
       </main>
 
       <BottomNavBar />
+
+      <Toast
+        visivel={!!toast}
+        tipo={toast?.tipo ?? 'sucesso'}
+        mensagem={toast?.mensagem ?? ''}
+        onFechar={() => setToast(null)}
+      />
     </>
   );
 }

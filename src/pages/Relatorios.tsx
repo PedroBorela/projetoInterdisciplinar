@@ -45,8 +45,11 @@ export function Relatorios() {
     return Array.from(months).sort((a, b) => b.localeCompare(a));
   }, [transacoes]);
 
-  // Mês selecionado no dropdown (padrão = mês atual / mais recente)
-  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(uniqueMonths[0] || '');
+  // Mês selecionado no dropdown (padrão = mês atual)
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  });
 
   const { ano, mes } = useMemo(() => {
     if (!selectedMonthKey) {
@@ -106,6 +109,22 @@ export function Relatorios() {
     return Math.max(...vals, 100); // evita divisão por zero
   }, [fluxoSemanal]);
 
+  // Mapa de classes Tailwind → hex para o SVG
+  const COR_MAP: Record<string, string> = {
+    'bg-orange-500': '#f97316', 'bg-blue-500': '#3b82f6',
+    'bg-purple-500': '#a855f7', 'bg-pink-500': '#ec4899',
+    'bg-yellow-500': '#eab308', 'bg-yellow-600': '#ca8a04',
+    'bg-red-500': '#ef4444',   'bg-green-500': '#22c55e',
+    'bg-green-600': '#16a34a', 'bg-indigo-500': '#6366f1',
+    'bg-teal-500': '#14b8a6',  'bg-cyan-500': '#06b6d4',
+    'bg-rose-500': '#f43f5e',  'bg-violet-500': '#8b5cf6',
+    'bg-slate-500': '#64748b', 'bg-amber-500': '#f59e0b',
+  };
+  const resolverCor = (cor: string) => COR_MAP[cor] ?? '#4800b2';
+
+  const DONUT_R = 54;
+  const DONUT_C = 2 * Math.PI * DONUT_R;
+
   // Distribuição por categoria
   const categoriasDistribuidas = useMemo(() => {
     return calcularPorCategoria(transacoes, categorias, ano, mes);
@@ -155,9 +174,106 @@ export function Relatorios() {
     return label.charAt(0).toUpperCase() + label.slice(1);
   }
 
-  // Trigger impressão PDF
-  const handlePrint = () => {
-    window.print();
+  const handleGerarRelatorio = () => {
+    const nomeDoMes = formatMonthKey(selectedMonthKey);
+    const dataGeracao = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    const saldoMes = totaisMes.receitas - totaisMes.despesas;
+    const saldoColor = saldoMes >= 0 ? '#15803d' : '#dc2626';
+    const fmtR = (n: number) => 'R$ ' + n.toFixed(2).replace('.', ',');
+
+    const transactionRows = [...totaisMes.transacoes]
+      .sort((a, b) => a.data.localeCompare(b.data))
+      .map((t) => {
+        const cat = categorias.find((c) => c.id === t.categoriaId);
+        const isReceita = t.tipo === 'receita';
+        const [yr, mo, dy] = t.data.split('-');
+        const cor = isReceita ? '#15803d' : '#dc2626';
+        return `<tr>
+          <td>${dy}/${mo}/${yr}</td>
+          <td>${t.descricao}</td>
+          <td>${cat?.nome || 'Geral'}</td>
+          <td style="text-align:right;color:${cor};font-weight:700">${isReceita ? '+' : '-'} ${fmtR(t.valor)}</td>
+        </tr>`;
+      }).join('');
+
+    const catRows = categoriasDistribuidas.map((item) => {
+      const pct = totalGastoCategorias > 0 ? (item.total / totalGastoCategorias) * 100 : 0;
+      const cor = resolverCor(item.categoria.cor);
+      return `<tr>
+        <td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${cor};margin-right:6px;vertical-align:middle"></span>${item.categoria.nome}</td>
+        <td style="text-align:right">${fmtR(item.total)}</td>
+        <td style="text-align:right">${pct.toFixed(1)}%</td>
+        <td style="width:80px"><div style="height:5px;background:#f3f4f6;border-radius:3px"><div style="height:100%;width:${pct.toFixed(0)}%;background:${cor};border-radius:3px"></div></div></td>
+      </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Relatório Financeiro — ${nomeDoMes}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#111827;background:#fff;padding:32px;max-width:860px;margin:0 auto}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #4800b2;margin-bottom:24px}
+.logo{font-size:21px;font-weight:900;color:#4800b2}.sub{font-size:12px;font-weight:600;color:#374151;margin-top:3px}
+.per{font-size:15px;font-weight:800;color:#4800b2;margin-top:3px}
+.meta{text-align:right;font-size:10.5px;color:#6b7280}
+.cards{display:flex;gap:14px;margin-bottom:28px}
+.card{flex:1;padding:14px 18px;border-radius:10px;border:1px solid #e5e7eb}
+.card .lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;margin-bottom:5px}
+.card .val{font-size:18px;font-weight:900}
+.rc{border-left:4px solid #16a34a}.rc .val{color:#15803d}
+.de{border-left:4px solid #dc2626}.de .val{color:#dc2626}
+.sa{border-left:4px solid ${saldoColor}}.sa .val{color:${saldoColor}}
+.sec{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;padding-bottom:6px;border-bottom:1px solid #f3f4f6;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;margin-bottom:26px}
+th{background:#f9fafb;text-align:left;padding:9px 11px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#6b7280}
+td{padding:8px 11px;border-bottom:1px solid #f9fafb;font-size:11.5px;color:#374151}
+tfoot td{border-top:2px solid #e5e7eb;padding-top:10px;font-weight:700;font-size:12px;border-bottom:none}
+.footer{margin-top:28px;padding-top:10px;border-top:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:10px}
+@media print{body{padding:0}@page{margin:12mm 18mm;size:A4}button{display:none}}
+</style></head><body>
+<div class="hd">
+  <div><div class="logo">LisoControl</div><div class="sub">Relatório Financeiro</div><div class="per">${nomeDoMes}</div></div>
+  <div class="meta">
+    <div>Gerado em <strong style="color:#111827">${dataGeracao}</strong></div>
+    <div style="margin-top:4px;font-size:10px">Patrimônio Acumulado</div>
+    <div style="font-size:15px;font-weight:900;color:#4800b2;margin-top:2px">${fmtR(patrimonioTotal)}</div>
+  </div>
+</div>
+<div class="cards">
+  <div class="card rc"><div class="lbl">Receitas</div><div class="val">${fmtR(totaisMes.receitas)}</div></div>
+  <div class="card de"><div class="lbl">Despesas</div><div class="val">${fmtR(totaisMes.despesas)}</div></div>
+  <div class="card sa"><div class="lbl">Saldo do Mês</div><div class="val">${fmtR(saldoMes)}</div></div>
+</div>
+${categoriasDistribuidas.length > 0 ? `
+<div class="sec">Distribuição por Categoria</div>
+<table>
+<thead><tr><th>Categoria</th><th style="text-align:right">Total</th><th style="text-align:right">Participação</th><th></th></tr></thead>
+<tbody>${catRows}</tbody>
+</table>` : ''}
+<div class="sec">Lançamentos do Período — ${totaisMes.transacoes.length} registro${totaisMes.transacoes.length !== 1 ? 's' : ''}</div>
+${totaisMes.transacoes.length === 0
+  ? '<p style="color:#9ca3af;font-style:italic;padding:10px 0 26px">Nenhuma transação no período selecionado.</p>'
+  : `<table>
+<thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead>
+<tbody>${transactionRows}</tbody>
+<tfoot><tr>
+  <td colspan="3">Saldo do Período</td>
+  <td style="text-align:right;color:${saldoColor}">${fmtR(saldoMes)}</td>
+</tr></tfoot>
+</table>`}
+<div class="footer">LisoControl · Sistema de Gestão Financeira Pessoal · Relatório gerado em ${dataGeracao}</div>
+</body></html>`;
+
+    const win = window.open('', '_blank', 'width=920,height=700');
+    if (!win) {
+      alert('Permita popups nesta página para gerar o relatório em PDF.');
+      return;
+    }
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 600);
   };
 
   return (
@@ -306,8 +422,34 @@ export function Relatorios() {
             ) : (
               <>
                 <div className="relative flex-1 flex flex-col justify-center items-center py-4">
-                  <div className="w-36 h-36 rounded-full border-[14px] border-surface-container border-t-primary relative flex items-center justify-center shadow-inner">
-                    <div className="text-center p-2">
+                  <div className="relative w-36 h-36 flex items-center justify-center">
+                    <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full -rotate-90">
+                      {/* Trilha de fundo */}
+                      <circle cx="60" cy="60" r={DONUT_R} fill="none"
+                        stroke="var(--color-surface-container)" strokeWidth="14" />
+                      {/* Segmentos por categoria */}
+                      {(() => {
+                        let acumulado = 0;
+                        return categoriasDistribuidas.map((item) => {
+                          const pct = totalGastoCategorias > 0
+                            ? (item.total / totalGastoCategorias) * 100 : 0;
+                          const dash = (pct / 100) * DONUT_C;
+                          const offset = -(acumulado / 100) * DONUT_C;
+                          acumulado += pct;
+                          return (
+                            <circle key={item.categoria.id}
+                              cx="60" cy="60" r={DONUT_R}
+                              fill="none"
+                              stroke={resolverCor(item.categoria.cor)}
+                              strokeWidth="14"
+                              strokeDasharray={`${dash} ${DONUT_C}`}
+                              strokeDashoffset={offset}
+                            />
+                          );
+                        });
+                      })()}
+                    </svg>
+                    <div className="text-center relative z-10">
                       <div className="text-xl font-headline font-extrabold text-on-surface tracking-tight">
                         {formatBRL(totalGastoCategorias)}
                       </div>
@@ -448,10 +590,11 @@ export function Relatorios() {
                 })}
               </div>
               <button
-                onClick={handlePrint}
-                className="w-full mt-6 py-4 border-2 border-dashed border-outline-variant text-on-surface-variant font-bold rounded-xl hover:bg-surface-container-low transition-all text-sm cursor-pointer print:hidden"
+                onClick={handleGerarRelatorio}
+                className="w-full mt-6 py-4 border-2 border-dashed border-outline-variant text-on-surface-variant font-bold rounded-xl hover:bg-surface-container-low transition-all text-sm cursor-pointer print:hidden flex items-center justify-center gap-2"
               >
-                Gerar Relatório Financeiro (PDF / Imprimir)
+                <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                Gerar Relatório Financeiro (PDF)
               </button>
             </>
           )}

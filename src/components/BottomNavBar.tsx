@@ -4,8 +4,8 @@ const items = [
   { to: '/dashboard',     icon: 'home',           label: 'Início'     },
   { to: '/transacoes',    icon: 'receipt_long',   label: 'Atividade'  },
   { to: '/calendario',    icon: 'calendar_today', label: 'Calendário' },
-  { to: '/categorias',    icon: 'analytics',      label: 'Análise'    },
-  { to: '/configuracoes', icon: 'menu',           label: 'Mais'       },
+  { to: '/categorias',    icon: 'category',       label: 'Categorias' },
+  { to: '/configuracoes', icon: 'settings',       label: 'Ajustes'    },
 ] as const;
 
 export function BottomNavBar() {

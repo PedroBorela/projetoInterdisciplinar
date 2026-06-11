@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { supabase } from '../lib/supabase';
 import type { Categoria } from '../types';
 
 const DEFAULTS: Omit<Categoria, 'id' | 'criadoEm'>[] = [
@@ -13,38 +13,103 @@ const DEFAULTS: Omit<Categoria, 'id' | 'criadoEm'>[] = [
   { nome: 'Compras', icone: 'shopping_bag', cor: 'bg-indigo-500', corTexto: 'text-indigo-700', corFundo: 'bg-indigo-100' },
 ];
 
-interface CategoriasState {
-  categorias: Categoria[];
-  adicionar: (dados: Omit<Categoria, 'id' | 'criadoEm'>) => void;
-  editar: (id: string, dados: Partial<Omit<Categoria, 'id' | 'criadoEm'>>) => void;
-  remover: (id: string) => void;
+function fromDB(row: Record<string, unknown>): Categoria {
+  return {
+    id: row.id as string,
+    nome: row.nome as string,
+    icone: row.icone as string,
+    cor: row.cor as string,
+    corTexto: row.cor_texto as string,
+    corFundo: row.cor_fundo as string,
+    criadoEm: row.criado_em as string,
+  };
 }
 
-export const useCategoriasStore = create<CategoriasState>()(
-  persist(
-    (set) => ({
-      categorias: DEFAULTS.map((c) => ({
-        ...c,
-        id: crypto.randomUUID(),
-        criadoEm: new Date().toISOString(),
-      })),
+interface CategoriasState {
+  categorias: Categoria[];
+  loading: boolean;
+  carregar: () => Promise<void>;
+  adicionar: (dados: Omit<Categoria, 'id' | 'criadoEm'>) => Promise<void>;
+  editar: (id: string, dados: Partial<Omit<Categoria, 'id' | 'criadoEm'>>) => Promise<void>;
+  remover: (id: string) => Promise<void>;
+}
 
-      adicionar: (dados) =>
-        set((s) => ({
-          categorias: [
-            ...s.categorias,
-            { ...dados, id: crypto.randomUUID(), criadoEm: new Date().toISOString() },
-          ],
-        })),
+export const useCategoriasStore = create<CategoriasState>()((set) => ({
+  categorias: [],
+  loading: false,
 
-      editar: (id, dados) =>
-        set((s) => ({
-          categorias: s.categorias.map((c) => (c.id === id ? { ...c, ...dados } : c)),
-        })),
+  carregar: async () => {
+    set({ loading: true });
+    const { data, error } = await supabase
+      .from('categorias')
+      .select('*')
+      .order('criado_em', { ascending: true });
 
-      remover: (id) =>
-        set((s) => ({ categorias: s.categorias.filter((c) => c.id !== id) })),
-    }),
-    { name: 'liso-categorias' }
-  )
-);
+    if (error) { set({ loading: false }); return; }
+
+    // Se usuário não tem categorias ainda, inserir os defaults
+    if (data.length === 0) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const inserts = DEFAULTS.map((c) => ({
+          user_id: user.id,
+          nome: c.nome,
+          icone: c.icone,
+          cor: c.cor,
+          cor_texto: c.corTexto,
+          cor_fundo: c.corFundo,
+        }));
+        const { data: criadas } = await supabase
+          .from('categorias')
+          .insert(inserts)
+          .select();
+        set({ categorias: (criadas ?? []).map(fromDB), loading: false });
+        return;
+      }
+    }
+
+    set({ categorias: data.map(fromDB), loading: false });
+  },
+
+  adicionar: async (dados) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('categorias')
+      .insert({
+        user_id: user.id,
+        nome: dados.nome,
+        icone: dados.icone,
+        cor: dados.cor,
+        cor_texto: dados.corTexto,
+        cor_fundo: dados.corFundo,
+      })
+      .select()
+      .single();
+
+    if (error || !data) return;
+    set((s) => ({ categorias: [...s.categorias, fromDB(data)] }));
+  },
+
+  editar: async (id, dados) => {
+    const update: Record<string, unknown> = {};
+    if (dados.nome !== undefined) update.nome = dados.nome;
+    if (dados.icone !== undefined) update.icone = dados.icone;
+    if (dados.cor !== undefined) update.cor = dados.cor;
+    if (dados.corTexto !== undefined) update.cor_texto = dados.corTexto;
+    if (dados.corFundo !== undefined) update.cor_fundo = dados.corFundo;
+
+    const { error } = await supabase.from('categorias').update(update).eq('id', id);
+    if (error) return;
+    set((s) => ({
+      categorias: s.categorias.map((c) => (c.id === id ? { ...c, ...dados } : c)),
+    }));
+  },
+
+  remover: async (id) => {
+    const { error } = await supabase.from('categorias').delete().eq('id', id);
+    if (error) return;
+    set((s) => ({ categorias: s.categorias.filter((c) => c.id !== id) }));
+  },
+}));

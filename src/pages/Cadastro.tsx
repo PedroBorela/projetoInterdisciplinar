@@ -1,12 +1,32 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import DarkVeil from '../components/DarkVeil';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export function Cadastro() {
   const navigate = useNavigate();
+  const cadastrarFn = useAuthStore((s) => s.cadastrar);
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmar, setConfirmar] = useState('');
+  const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    if (!nome || !email || !senha) { setErro('Preencha todos os campos.'); return; }
+    if (senha.length < 6) { setErro('A senha precisa ter ao menos 6 caracteres.'); return; }
+    if (senha !== confirmar) { setErro('As senhas não coincidem.'); return; }
+    setErro('');
+    setCarregando(true);
+    const resultado = await cadastrarFn(nome, email, senha);
+    setCarregando(false);
+    if (resultado.success) {
+      navigate('/dashboard');
+    } else {
+      setErro(resultado.error ?? 'Erro ao criar conta.');
+    }
   };
 
   return (
@@ -107,6 +127,9 @@ export function Cadastro() {
                   id="name"
                   placeholder="Nome Completo"
                   type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  disabled={carregando}
                 />
               </div>
             </div>
@@ -125,6 +148,9 @@ export function Cadastro() {
                   id="email"
                   placeholder="estudante@universidade.edu"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={carregando}
                 />
               </div>
             </div>
@@ -144,6 +170,9 @@ export function Cadastro() {
                     id="password"
                     placeholder="••••••••"
                     type="password"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    disabled={carregando}
                   />
                 </div>
               </div>
@@ -161,18 +190,30 @@ export function Cadastro() {
                     id="confirm"
                     placeholder="••••••••"
                     type="password"
+                    value={confirmar}
+                    onChange={(e) => setConfirmar(e.target.value)}
+                    disabled={carregando}
                   />
                 </div>
               </div>
             </div>
 
+            {/* Mensagem de erro */}
+            {erro && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-xl text-red-600 text-sm font-medium">
+                <span className="material-symbols-outlined text-base">error</span>
+                {erro}
+              </div>
+            )}
+
             {/* Botão */}
             <button
-              className="w-full editorial-gradient py-3.5 rounded-xl text-white font-bold text-base shadow-[0_8px_24px_rgba(72,0,178,0.25)] hover:shadow-[0_12px_32px_rgba(72,0,178,0.35)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer"
+              className="w-full editorial-gradient py-3.5 rounded-xl text-white font-bold text-base shadow-[0_8px_24px_rgba(72,0,178,0.25)] hover:shadow-[0_12px_32px_rgba(72,0,178,0.35)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-1 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               type="submit"
+              disabled={carregando}
             >
-              Criar conta
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
+              {carregando ? 'Criando conta...' : 'Criar conta'}
+              {!carregando && <span className="material-symbols-outlined text-lg">arrow_forward</span>}
             </button>
           </form>
 
