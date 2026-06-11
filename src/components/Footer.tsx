@@ -35,24 +35,24 @@ export function Footer() {
                             <span className="text-on-surface font-bold text-title-md">LisoControl</span>
                         </div>
                         <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                            Transforming the way you relate to your money through data and
-                            intelligence.
+                            Transformando a forma como você se relaciona com o seu dinheiro através
+                            de dados e inteligência.
                         </p>
                     </div>
                     <div className="footer-col">
-                        <h4 className="font-bold mb-6 text-title-md text-on-surface">Product</h4>
+                        <h4 className="font-bold mb-6 text-title-md text-on-surface">Produto</h4>
                         <ul className="flex flex-col gap-3 text-body-md text-on-surface opacity-90">
-                            <li><a className="hover:text-primary transition-colors" href="#">Features</a></li>
-                            <li><a className="hover:text-primary transition-colors" href="#">Methodology</a></li>
-                            <li><a className="hover:text-primary transition-colors" href="#">Security</a></li>
-                            <li><a className="hover:text-primary transition-colors" href="#">Integrations</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Recursos</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Metodologia</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Segurança</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Integrações</a></li>
                         </ul>
                     </div>
                     <div className="footer-col">
-                        <h4 className="font-bold mb-6 text-title-md text-on-surface">Support</h4>
+                        <h4 className="font-bold mb-6 text-title-md text-on-surface">Suporte</h4>
                         <ul className="flex flex-col gap-3 text-body-md text-on-surface opacity-90">
-                            <li><a className="hover:text-primary transition-colors" href="#">Help Center</a></li>
-                            <li><a className="hover:text-primary transition-colors" href="#">Community</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Central de Ajuda</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Comunidade</a></li>
                             <li><a className="hover:text-primary transition-colors" href="#">API</a></li>
                             <li><a className="hover:text-primary transition-colors" href="#">Status</a></li>
                         </ul>
@@ -60,16 +60,16 @@ export function Footer() {
                     <div className="footer-col">
                         <h4 className="font-bold mb-6 text-title-md text-on-surface">Legal</h4>
                         <ul className="flex flex-col gap-3 text-body-md text-on-surface opacity-90">
-                            <li><a className="hover:text-primary transition-colors" href="#">Privacy</a></li>
-                            <li><a className="hover:text-primary transition-colors" href="#">Terms of Use</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Privacidade</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Termos de Uso</a></li>
                             <li><a className="hover:text-primary transition-colors" href="#">Cookies</a></li>
-                            <li><a className="hover:text-primary transition-colors" href="#">Privacy Mode</a></li>
+                            <li><a className="hover:text-primary transition-colors" href="#">Modo Privacidade</a></li>
                         </ul>
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-none">
                     <p className="text-label-sm text-on-surface opacity-90">
-                        © 2024 LisoControl. All rights reserved. Data Export available in compliance with data protection laws.
+                        © 2026 LisoControl. Todos os direitos reservados. Exportação de dados disponível em conformidade com a LGPD.
                     </p>
                     <div className="flex gap-6">
                         <a className="text-on-surface opacity-90 hover:text-primary transition-colors" href="#">

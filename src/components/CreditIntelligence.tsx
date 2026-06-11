@@ -4,18 +4,18 @@ import { gsap } from "gsap";
 const cards = [
     {
         icon: "notifications_active",
-        title: "Smart Alerts",
-        description: "Get notified before interest kicks in or when you reach 30% of your limit usage.",
+        title: "Alertas Inteligentes",
+        description: "Receba notificações antes dos juros incidirem ou ao atingir 30% do seu limite.",
     },
     {
         icon: "trending_up",
-        title: "Limit Optimization",
-        description: "Data-driven advice on the best times to request limit increases and improve your score.",
+        title: "Otimização de Limite",
+        description: "Recomendações baseadas em dados sobre os melhores momentos para solicitar aumento de limite e melhorar seu score.",
     },
     {
         icon: "verified_user",
-        title: "Fraud Detection",
-        description: "AI-driven monitoring to detect unusual activities in fractions of a second.",
+        title: "Detecção de Fraudes",
+        description: "Monitoramento com IA para detectar atividades incomuns em frações de segundo.",
     },
 ];
 
@@ -58,13 +58,13 @@ export function CreditIntelligence() {
 
             <div className="mx-auto max-w-[1200px] px-6 relative">
                 <div className="credit-heading flex flex-col gap-4 mb-16 items-center text-center">
-                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Credit</span>
+                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Crédito</span>
                     <h2 className="text-headline-md font-bold text-on-surface tracking-tight">
-                        Credit Card Intelligence
+                        Inteligência de Cartão de Crédito
                     </h2>
                     <p className="text-body-md text-on-surface opacity-90 max-w-2xl">
-                        Smart alerts and limit management to protect your score and optimize your
-                        rewards.
+                        Alertas inteligentes e gestão de limite para proteger seu score e otimizar
+                        suas recompensas.
                     </p>
                 </div>
 

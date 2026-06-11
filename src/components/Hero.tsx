@@ -48,15 +48,7 @@ export function Hero() {
                     scale: 0.95,
                     duration: 1,
                     ease: "power3.out",
-                }, "-=1")
-                .from(".hero-float-card", {
-                    opacity: 0,
-                    scale: 0.8,
-                    y: 20,
-                    stagger: 0.18,
-                    duration: 0.6,
-                    ease: "back.out(1.6)",
-                }, "-=0.5");
+                }, "-=1");
         }, containerRef);
 
         return () => ctx.revert();
@@ -127,44 +119,16 @@ export function Hero() {
                     </div>
                 </div>
 
-                {/* Right: image with floating cards */}
+                {/* Right: image */}
                 <div className="hero-image relative">
-                    {/* Floating card â€” top left */}
-                    <div className="hero-float-card absolute -left-8 top-10 z-10 flex items-center gap-3 px-4 py-3 rounded-[var(--radius-xl)] bg-surface-container-lowest shadow-ambient animate-float border-none">
-                        <div className="size-9 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
-                            <span className="material-symbols-outlined text-secondary text-base">arrow_upward</span>
-                        </div>
-                        <div>
-                            <p className="text-label-sm text-on-surface opacity-90 leading-none mb-0.5">Economizado</p>
-                            <p className="text-body-md font-bold text-on-surface">+R$ 1.240</p>
-                        </div>
-                    </div>
-
-                    {/* Floating card â€” bottom right */}
-                    <div className="hero-float-card absolute -right-4 bottom-14 z-10 flex items-center gap-3 px-4 py-3 rounded-[var(--radius-xl)] bg-surface-container-lowest shadow-ambient animate-float-delayed border-none">
-                        <div className="size-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                            <span className="material-symbols-outlined text-primary text-base">shield</span>
-                        </div>
-                        <div>
-                            <p className="text-label-sm text-on-surface opacity-90 leading-none mb-0.5">Score</p>
-                            <p className="text-body-md font-bold text-on-surface">892 / 1000</p>
-                        </div>
-                    </div>
-
-                    {/* Main image frame */}
-                    <div className="w-full aspect-square rounded-[1.5rem] bg-gradient-to-br from-primary/20 via-surface-container-low to-primary/5 p-4 glow-primary border-none">
-                        <div
-                            className="w-full h-full rounded-[var(--radius-xl)] shadow-ambient overflow-hidden border-none"
-                            style={{
-                                backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuApuANVzNXNnTTQRpJBLCEFI6ZTMvgK7Dfk7Qi3bbITlJdAFPsqgQDqHPNizFXnWVb9tCOAVm0FNyEs247kRXp6_ybR7CNRUrcEJlWQUkRPpqJ-YnU0Cz2GaKk0Jwt2MogHqfrEjKgwhho6MttGyYf0JaXMDuOFtka5z5R9rqiemxfh4b_X8nlMEjPyBjI_O_MfphXYm5-lvZLa4Itl7Qy4lVPODv1evDi-XTKIWye_vsnPXXEe24m2mNSDjysiU1FHFdSjp3ZHq18')",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                            }}
-                        />
-                    </div>
-                    </div>
+                    <img
+                        src="/dashboard_print.png"
+                        alt="Dashboard LisoControl"
+                        className="w-full rounded-[1.5rem] shadow-2xl border border-outline-variant/15"
+                    />
                 </div>
             </div>
+        </div>
         </section>
     );
 }

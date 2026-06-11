@@ -37,13 +37,13 @@ export function Features() {
         <section ref={sectionRef} className="bg-surface-container-low py-24" id="features">
             <div className="mx-auto max-w-[1200px] px-6">
                 <div className="features-heading flex flex-col gap-4 mb-16">
-                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Tools</span>
+                    <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Ferramentas</span>
                     <h2 className="text-headline-md font-bold text-on-surface tracking-tight">
-                        Master Your Cash Flow
+                        Domine Seu Fluxo de Caixa
                     </h2>
                     <p className="text-body-md text-on-surface opacity-90 max-w-2xl">
-                        Visualize your spending patterns with our exclusive Heatmap Calendar, ensuring that
-                        you never miss a beat in your liquidity management.
+                        Visualize seus padrões de gastos com nosso exclusivo Calendário Heatmap, garantindo
+                        que você nunca perca o controle da sua liquidez.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -55,16 +55,16 @@ export function Features() {
                             <span className="material-symbols-outlined text-3xl">calendar_view_month</span>
                         </div>
                         <div>
-                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Heatmap Calendar</h3>
+                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Calendário Heatmap</h3>
                             <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                Visual intensity maps to identify days of highest spending and plan your
-                                weekly liquidity with surgical precision.
+                                Mapas de intensidade visual para identificar os dias de maiores gastos e planejar
+                                sua liquidez semanal com precisão cirúrgica.
                             </p>
                         </div>
                         <div
                             className="w-full aspect-video rounded-[var(--radius-xl)] overflow-hidden border-none"
                             style={{
-                                backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBUWQoqeEDF4d2yADjLMpZZjZG9fVKkA_Rw-uChUV9pZW8ZLxrMataYgSRBwtfLEpOqoG6YUqOUOxqH3WGMKUT6F6uirjdKK6c2WKI1O6HLMRSd9Pl7jiTVL7Jv2_TQBhhVVNCEePczDM3dCpYDCgeX_0AQ1pGk3IscQUvfuaAEt039lVt364On5aHxc2l-xvz5yIms4Ac5Bpdz7vKXcjcWPshwgZQk8ExaLlhToFz_pug0SeDaj8iG_Chw_AwLDytVTyGW9dCzlIk')",
+                                backgroundImage: "url('/calendario_print.png')",
                                 backgroundSize: "cover",
                             }}
                         />
@@ -77,16 +77,16 @@ export function Features() {
                             <span className="material-symbols-outlined text-3xl">bolt</span>
                         </div>
                         <div>
-                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Real-Time Tracking</h3>
+                            <h3 className="text-title-md font-bold mb-2 text-on-surface">Rastreamento em Tempo Real</h3>
                             <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                Instant updates for each transaction across all your accounts,
-                                automatically categorized by AI.
+                                Atualizações instantâneas para cada transação em todas as suas contas,
+                                categorizadas automaticamente por IA.
                             </p>
                         </div>
                         <div
                             className="w-full aspect-video rounded-[var(--radius-xl)] overflow-hidden border-none"
                             style={{
-                                backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeEubKWAGNWmgxgw08Vba4RLOFYQLfyfcmxcErW46R7SfJu9u-LneBmK1v3Sjxh5C3Z3hlRT3DWJ0p8k6d8rv0kAqEfiNdDtCWr1EBwSqzj9M_FTQnNlyRedVr6cWPfAjgr4kAwBMIMi5saPM-lT45RFUbKiFiXfytfLARdalzfsMxIv29cPN-QqdbQYJF6j6qo8cnPJ7LUaWxVR4JiPnabFUfVRGG2FgoNLNxHghVU0lG5diE-1bpMdK0bQRDA2ctVeijnmH2Yu4')",
+                                backgroundImage: "url('/transacoes_print.png')",
                                 backgroundSize: "cover",
                             }}
                         />

@@ -26,7 +26,7 @@ export function Header() {
             }`}
         >
             <div className="flex items-center gap-3 text-primary">
-                <span className="material-symbols-outlined text-3xl">account_balance_wallet</span>
+                <img src="/logo/logoLiso.png" alt="LisoControl" className="h-16 w-16 object-contain" />
                 <h2 className="text-on-surface text-title-md font-bold leading-tight tracking-tight">
                     LisoControl
                 </h2>
@@ -39,8 +39,7 @@ export function Header() {
                         href="#credit">Inteligência</a>
                     <a className="nav-item text-on-surface hover:text-primary transition-colors text-body-md"
                         href="#students">Estudantes</a>
-                    <a className="nav-item text-on-surface hover:text-primary transition-colors text-body-md"
-                        href="#">Preços</a>
+                    <button className="nav-item text-on-surface hover:text-primary transition-colors text-body-md bg-transparent border-none cursor-pointer p-0">Preços</button>
                 </nav>
                 <button 
                     onClick={() => navigate('/login')}

@@ -64,13 +64,13 @@ export function StudentsFeatures() {
                     {/* Left: text */}
                     <div className="order-2 lg:order-1 flex flex-col gap-8">
                         <div className="students-text flex flex-col gap-4">
-                            <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Students</span>
+                            <span className="text-label-sm text-primary font-bold tracking-widest uppercase">Estudantes</span>
                             <h2 className="text-headline-md font-bold text-on-surface leading-tight">
-                                Built for the Next Generation
+                                Feito para a Nova Geração
                             </h2>
                             <p className="text-body-md text-on-surface opacity-90">
-                                Tailored features for students to manage shared expenses in
-                                dorms and reach aggressive savings goals.
+                                Funcionalidades pensadas para estudantes gerenciarem despesas compartilhadas
+                                na república e alcançarem metas de poupança ambiciosas.
                             </p>
                         </div>
 
@@ -80,9 +80,9 @@ export function StudentsFeatures() {
                                     <span className="material-symbols-outlined text-on-primary text-xl">groups</span>
                                 </div>
                                 <div>
-                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Shared Expenses</h4>
+                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Despesas Compartilhadas</h4>
                                     <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                        Split bills with roommates stress-free and track who has already paid.
+                                        Divida contas com colegas de quarto sem estresse e acompanhe quem já pagou.
                                     </p>
                                 </div>
                             </div>
@@ -92,10 +92,10 @@ export function StudentsFeatures() {
                                     <span className="material-symbols-outlined text-on-primary text-xl">savings</span>
                                 </div>
                                 <div>
-                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Gamified Goals</h4>
+                                    <h4 className="text-title-md font-bold mb-1 text-on-surface">Metas Gamificadas</h4>
                                     <p className="text-body-md text-on-surface opacity-90 leading-relaxed">
-                                        Reach savings milestones for tuition, trips, or your first car with
-                                        digital rewards.
+                                        Alcance marcos de poupança para mensalidade, viagens ou seu primeiro carro
+                                        com recompensas digitais.
                                     </p>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@ export function StudentsFeatures() {
                         <div
                             className="students-img-1 h-64 rounded-[var(--radius-xl)] overflow-hidden shadow-ambient"
                             style={{
-                                backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdGN-IeaZAgfGgaNcjfm5sA93n0hcDjB8nSx52UJDzvtacecMjIoqgaixkJAQgSToRSBtD7dgFgZD6BtEp8lS810USs65d91NIsyCPaTZW58sneRw9D4cjf0QtcZvKxhVFJ9ZEBdiZmgMHrBz5gfqQtXVW66DqaaCqZOUoAXDM9GxaVojfWerj2Y_dQ8j-fPNmB3sFS7U6l8HDWmAL-OECT7s6dQSC2Bnkb-K8v32cj9KjJSfpi9KgB_m9-jOHaR8razAM8TDUxpw')",
+                                backgroundImage: "url('/cartoes_print.png')",
                                 backgroundSize: "cover",
                                 backgroundPosition: "center",
                             }}
@@ -115,7 +115,7 @@ export function StudentsFeatures() {
                         <div
                             className="students-img-2 h-64 rounded-[var(--radius-xl)] overflow-hidden shadow-ambient mt-8"
                             style={{
-                                backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuA9QvBTflueDYwvKVhsmboH39eKCJW99hpu5WOxj77AHvUGUgUwodm9uCnf58PzPQK327JoUOygNLSLALZXe8jNlfQB1E1q98V70OrZp87lHXjICVqnqLTdMj9ok5AXVBoUADK-89XIYgRYYjdO2EdCxerTwifEZ75H-pJV0gxixCBz8A7mZPLlmqLviCmzhUGBbEsEVIY4iiRXjtgvplNu-5Hum0VAsfSM3qjgkN6m1qRDh0See2GBRefcq5ZoLa0D4dm4yP_j2fg')",
+                                backgroundImage: "url('/transacoes_print.png')",
                                 backgroundSize: "cover",
                                 backgroundPosition: "center",
                             }}

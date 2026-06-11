@@ -221,14 +221,6 @@ export function Transacoes() {
 
       <BottomNavBar />
 
-      {/* FAB */}
-      <Link
-        to="/nova-transacao"
-        className="fixed bottom-28 right-5 w-14 h-14 primary-gradient rounded-full shadow-[0_12px_32px_rgba(72,0,178,0.3)] flex items-center justify-center text-white z-50 hover:scale-110 active:scale-95 transition-all"
-      >
-        <span className="material-symbols-outlined text-2xl">add</span>
-      </Link>
-
       {excluindoId && (
         <ConfirmDialog
           mensagem={`Excluir a transação "${transacoes.find((t) => t.id === excluindoId)?.descricao}"?`}

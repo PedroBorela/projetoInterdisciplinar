@@ -23,7 +23,10 @@ export function TopNavBar() {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl flex justify-between items-center px-6 py-4 border-b border-outline-variant/20">
-      <div className="text-xl font-extrabold tracking-tight text-primary font-headline">LisoControl</div>
+      <div className="flex items-center gap-2">
+        <img src="/logo/logoLiso.png" alt="LisoControl" className="h-9 w-9 object-contain" />
+        <span className="text-xl font-extrabold tracking-tight text-primary font-headline">LisoControl</span>
+      </div>
       <div className="flex gap-3">
         <button className="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full cursor-pointer">
           <span className="material-symbols-outlined">notifications</span>
