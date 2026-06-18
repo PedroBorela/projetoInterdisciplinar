@@ -279,7 +279,7 @@ export function OcorrenciasFixas() {
                         {o.ativa && (
                           isLancadaEsteMes(o.id) ? (
                             <span className="font-label text-[10px] text-income flex items-center gap-1 font-bold bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md">
-                              <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                              <span className="material-symbols-outlined text-[14px] animate-icon-pop" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                               Lançada este mês
                             </span>
                           ) : (
@@ -416,13 +416,15 @@ export function OcorrenciasFixas() {
                     <button
                       type="button"
                       onClick={() => setDebitoAutomatico((prev) => !prev)}
-                      className={`w-12 h-6 rounded-full relative p-1 flex items-center transition-colors ${
-                        debitoAutomatico
-                          ? 'primary-gradient justify-end'
-                          : 'bg-outline/30 justify-start'
+                      className={`w-12 h-6 rounded-full relative transition-colors ${
+                        debitoAutomatico ? 'bg-primary' : 'bg-surface-container-high'
                       }`}
                     >
-                      <div className="w-4 h-4 bg-white rounded-full shadow" />
+                      <div
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
+                          debitoAutomatico ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
                     </button>
                   </div>
                 </div>

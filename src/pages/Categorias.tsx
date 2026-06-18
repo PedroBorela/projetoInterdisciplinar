@@ -181,8 +181,8 @@ export function Categorias() {
       {/* Modal Criar/Editar */}
       {modalAberto && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setModalAberto(false)} />
-          <div className="relative bg-surface-container-lowest rounded-2xl w-full max-w-md p-6 editorial-shadow max-h-[90vh] overflow-y-auto">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-backdrop-in" onClick={() => setModalAberto(false)} />
+          <div className="relative bg-surface-container-lowest rounded-2xl w-full max-w-md p-6 editorial-shadow max-h-[90vh] overflow-y-auto animate-modal-in">
             <h2 className="font-headline font-bold text-xl text-on-surface mb-6">
               {editandoId ? 'Editar Categoria' : 'Nova Categoria'}
             </h2>

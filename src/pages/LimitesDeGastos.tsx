@@ -102,7 +102,7 @@ export function LimitesDeGastos() {
 
         {mensagemSucesso && (
           <div className="mb-6 bg-income-container text-income text-sm font-semibold p-4 rounded-xl editorial-shadow flex items-center gap-2 animate-fade-in">
-            <span className="material-symbols-outlined text-xl">check_circle</span>
+            <span className="material-symbols-outlined text-xl animate-icon-pop">check_circle</span>
             {mensagemSucesso}
           </div>
         )}

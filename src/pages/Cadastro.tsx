@@ -200,8 +200,8 @@ export function Cadastro() {
 
             {/* Mensagem de erro */}
             {erro && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-xl text-red-600 text-sm font-medium">
-                <span className="material-symbols-outlined text-base">error</span>
+              <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-xl text-red-600 text-sm font-medium animate-fade-in">
+                <span className="material-symbols-outlined text-base animate-icon-pop">error</span>
                 {erro}
               </div>
             )}

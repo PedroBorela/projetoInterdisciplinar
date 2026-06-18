@@ -32,11 +32,11 @@ export function ConfirmModal({
       onClick={onCancelar}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-backdrop-in" />
 
       {/* Dialog */}
       <div
-        className="relative w-full max-w-sm bg-surface-container-lowest rounded-3xl p-7 editorial-shadow flex flex-col gap-5"
+        className="relative w-full max-w-sm bg-surface-container-lowest rounded-3xl p-7 editorial-shadow flex flex-col gap-5 animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col gap-2">

@@ -27,7 +27,7 @@ export function Toast({ mensagem, tipo, visivel, onFechar, duracao = 3000 }: Toa
           : 'bg-red-600 text-white'
         }`}
     >
-      <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+      <span className="material-symbols-outlined text-lg animate-icon-pop" style={{ fontVariationSettings: "'FILL' 1" }}>
         {sucesso ? 'check_circle' : 'error'}
       </span>
       {mensagem}

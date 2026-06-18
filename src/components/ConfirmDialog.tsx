@@ -15,10 +15,10 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancelar} />
-      <div className="relative bg-surface-container-lowest rounded-2xl p-6 w-full max-w-sm editorial-shadow">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-backdrop-in" onClick={onCancelar} />
+      <div className="relative bg-surface-container-lowest rounded-2xl p-6 w-full max-w-sm editorial-shadow animate-modal-in">
         <div className="w-12 h-12 bg-error-container rounded-xl flex items-center justify-center mb-4">
-          <span className="material-symbols-outlined text-error text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>delete</span>
+          <span className="material-symbols-outlined text-error text-xl animate-icon-pop" style={{ fontVariationSettings: "'FILL' 1" }}>delete</span>
         </div>
         <h3 className="font-headline font-bold text-lg text-on-surface mb-2">{titulo}</h3>
         <p className="text-sm text-on-surface-variant mb-6 leading-relaxed">{mensagem}</p>
