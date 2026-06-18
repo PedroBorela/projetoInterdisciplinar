@@ -61,14 +61,14 @@ export function Cadastro() {
               <div className="w-9 h-9 editorial-gradient rounded-xl flex items-center justify-center text-white shadow-lg">
                 <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>school</span>
               </div>
-              <span className="text-lg font-extrabold tracking-tight text-white">LisoControl</span>
+              <span className="text-lg font-extrabold tracking-tight text-bla">LisoControl</span>
             </div>
 
-            <h1 className="text-3xl font-extrabold text-white leading-[1.15] mb-4 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-black leading-[1.15] mb-4 tracking-tight">
               Cuide do seu<br />
               <span className="text-[--color-secondary-fixed]">futuro financeiro.</span>
             </h1>
-            <p className="text-white text-sm font-medium leading-relaxed max-w-xs">
+            <p className="text-black text-sm font-medium leading-relaxed max-w-xs">
               Participe do livro-caixa digital projetado para o estudante moderno. Acompanhe, planeje e prospere com precisão editorial.
             </p>
           </div>
@@ -77,15 +77,15 @@ export function Cadastro() {
           <div className="relative z-10 bg-white/10 backdrop-blur-sm rounded-xl p-5 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-white text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
+                <span className="material-symbols-outlined text-black text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
               </div>
               <div>
-                <h3 className="font-bold text-white text-sm">Gastos Inteligentes</h3>
-                <p className="text-[#e9ddff] text-xs font-medium">Estudantes economizam 15% mais por mês.</p>
+                <h3 className="font-bold text-black text-sm">Gastos Inteligentes</h3>
+                <p className="text-[#000000] text-xs font-medium">Estudantes economizam 15% mais por mês.</p>
               </div>
             </div>
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-bold text-white">
+              <div className="flex justify-between text-xs font-bold text-black">
                 <span>Meta de Economia</span>
                 <span>85%</span>
               </div>
