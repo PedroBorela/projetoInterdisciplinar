@@ -56,7 +56,7 @@ export function Login() {
               </div>
               <span className="text-lg font-extrabold tracking-tight text-white">LisoControl</span>
             </div>
-            <h1 className="text-3xl font-extrabold text-white leading-[1.15] mb-4 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-black leading-[1.15] mb-4 tracking-tight">
               Gerencie sua<br />riqueza <span className="text-[--color-secondary-fixed]">acadêmica.</span>
             </h1>
             <p className="text-[--color-primary-fixed] text-base font-medium leading-relaxed max-w-xs opacity-90">
@@ -93,10 +93,10 @@ export function Login() {
 
           {/* Logo mobile */}
           <div className="md:hidden flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 editorial-gradient rounded-lg flex items-center justify-center text-white">
+            <div className="w-8 h-8 editorial-gradient rounded-lg flex items-center justify-center text-black">
               <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
             </div>
-            <span className="text-base font-extrabold tracking-tight text-[--color-primary]">LisoControl</span>
+            <span className="text-base font-extrabold tracking-tight text-black">LisoControl</span>
           </div>
 
           <div className="mb-6">
