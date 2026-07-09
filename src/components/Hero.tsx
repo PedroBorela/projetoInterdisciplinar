@@ -90,20 +90,16 @@ export function Hero() {
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full">
+                    <div className="hero-btn flex flex-col sm:flex-row flex-wrap gap-4 w-full">
                         <button 
                             onClick={() => navigate('/cadastro')}
-                            className="hero-btn btn-primary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center h-14 px-6 sm:px-8 text-title-md shadow-ambient hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+                            className="btn-primary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center h-14 px-6 sm:px-8 text-title-md shadow-ambient hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
                             Teste Grátis 30 Dias
                         </button>
                         <button 
                             onClick={() => navigate('/login')}
-                            className="hero-btn btn-secondary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center h-14 px-6 sm:px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+                            className="btn-secondary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center h-14 px-6 sm:px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
                             Entrar
-                        </button>
-                        <button className="hero-btn btn-secondary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center gap-2 h-14 px-6 sm:px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
-                            <span className="material-symbols-outlined text-xl text-primary">play_circle</span>
-                            Ver Demonstração
                         </button>
                     </div>
 
