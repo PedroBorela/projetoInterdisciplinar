@@ -80,7 +80,7 @@ export function Hero() {
                             <span className="w-2 h-2 rounded-full bg-primary inline-block animate-pulse" />
                             <span className="font-bold tracking-widest text-xs uppercase">Gestão de Elite</span>
                         </div>
-                        <h1 className="hero-title text-display-lg font-bold text-on-surface leading-[1.1] tracking-tight">
+                        <h1 className="hero-title text-4xl sm:text-5xl lg:text-display-lg font-bold text-on-surface leading-[1.15] lg:leading-[1.1] tracking-tight">
                             Assuma o comando da sua{" "}
                             <span className="gradient-text">riqueza</span>.
                         </h1>
@@ -90,18 +90,18 @@ export function Hero() {
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full">
                         <button 
                             onClick={() => navigate('/cadastro')}
-                            className="hero-btn btn-primary flex min-w-[188px] cursor-pointer items-center justify-center h-14 px-8 text-title-md shadow-ambient hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+                            className="hero-btn btn-primary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center h-14 px-6 sm:px-8 text-title-md shadow-ambient hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
                             Teste Grátis 30 Dias
                         </button>
                         <button 
                             onClick={() => navigate('/login')}
-                            className="hero-btn btn-secondary flex min-w-[188px] cursor-pointer items-center justify-center h-14 px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+                            className="hero-btn btn-secondary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center h-14 px-6 sm:px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
                             Entrar
                         </button>
-                        <button className="hero-btn btn-secondary flex min-w-[188px] cursor-pointer items-center justify-center gap-2 h-14 px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+                        <button className="hero-btn btn-secondary flex-1 sm:flex-initial min-w-[140px] sm:min-w-[188px] cursor-pointer items-center justify-center gap-2 h-14 px-6 sm:px-8 text-title-md hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
                             <span className="material-symbols-outlined text-xl text-primary">play_circle</span>
                             Ver Demonstração
                         </button>

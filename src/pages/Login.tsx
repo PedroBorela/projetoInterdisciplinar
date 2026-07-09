@@ -26,17 +26,17 @@ export function Login() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[--color-surface] p-4 overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[--color-surface] p-4 md:p-6 overflow-y-auto relative">
 
-      <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
+      <div className="fixed inset-0 z-0 opacity-80 pointer-events-none">
         <DarkVeil hueShift={-40} speed={0.2} noiseIntensity={0.05} scanlineIntensity={0.1} />
       </div>
 
       {/* Background blobs */}
-      <div className="absolute -top-[10%] -left-[5%] w-[35vw] h-[35vw] rounded-full bg-[--color-primary]/20 blur-[80px] pointer-events-none" />
-      <div className="absolute bottom-[5%] right-[2%] w-[25vw] h-[25vw] rounded-full bg-[--color-secondary-container]/30 blur-[100px] pointer-events-none" />
+      <div className="fixed -top-[10%] -left-[5%] w-[35vw] h-[35vw] rounded-full bg-[--color-primary]/20 blur-[80px] pointer-events-none" />
+      <div className="fixed bottom-[5%] right-[2%] w-[25vw] h-[25vw] rounded-full bg-[--color-secondary-container]/30 blur-[100px] pointer-events-none" />
 
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 w-full max-w-4xl bg-white rounded-2xl shadow-[0_12px_48px_rgba(72,0,178,0.10)] overflow-hidden" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 w-full max-w-4xl bg-white rounded-2xl shadow-[0_12px_48px_rgba(72,0,178,0.10)] overflow-hidden md:max-h-[calc(100vh-2rem)]">
 
         {/* Painel esquerdo */}
         <div className="hidden md:flex md:col-span-5 relative flex-col justify-between p-8 overflow-hidden bg-[--color-primary]">
