@@ -21,22 +21,26 @@ export function Transacoes() {
   const [busca, setBusca] = useState('');
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>('todos');
   const [filtroCategoriaId, setFiltroCategoriaId] = useState('');
-  const [filtroMes, setFiltroMes] = useState(true);
+  const [mesFiltro, setMesFiltro] = useState<number | 'todos'>(() => {
+    return new Date().getMonth() + 1;
+  });
+  const [anoFiltro, setAnoFiltro] = useState<number>(() => {
+    return new Date().getFullYear();
+  });
   const [excluindoId, setExcluindoId] = useState<string | null>(null);
 
-  const hoje = new Date();
+  const hoje = useMemo(() => new Date(), []);
   const anoAtual = hoje.getFullYear();
-  const mesAtual = hoje.getMonth() + 1;
 
   const filtradas = useMemo(() => {
     let lista = [...transacoes].sort(
       (a, b) => new Date(b.data).getTime() - new Date(a.data).getTime()
     );
 
-    if (filtroMes) {
+    if (mesFiltro !== 'todos') {
       lista = lista.filter((t) => {
         const d = parseISO(t.data);
-        return getYear(d) === anoAtual && getMonth(d) + 1 === mesAtual;
+        return getYear(d) === anoFiltro && getMonth(d) + 1 === mesFiltro;
       });
     }
 
@@ -55,7 +59,7 @@ export function Transacoes() {
     }
 
     return lista;
-  }, [transacoes, busca, filtroTipo, filtroCategoriaId, filtroMes, anoAtual, mesAtual]);
+  }, [transacoes, busca, filtroTipo, filtroCategoriaId, mesFiltro, anoFiltro]);
 
   // Agrupar por data
   const agrupadas = useMemo(() => {
@@ -68,8 +72,16 @@ export function Transacoes() {
     return Object.entries(grupos);
   }, [filtradas]);
 
-  const { receitas, despesas } = calcularTotaisMes(transacoes, anoAtual, mesAtual);
-  const variacaoDespesa = calcularVariacaoMes(transacoes, anoAtual, mesAtual, 'despesa');
+  const { receitas, despesas, variacaoDespesa } = useMemo(() => {
+    if (mesFiltro === 'todos') {
+      const r = filtradas.filter((t) => t.tipo === 'receita').reduce((sum, t) => sum + t.valor, 0);
+      const d = filtradas.filter((t) => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
+      return { receitas: r, despesas: d, variacaoDespesa: 0 };
+    }
+    const { receitas: r, despesas: d } = calcularTotaisMes(transacoes, anoFiltro, mesFiltro);
+    const v = calcularVariacaoMes(transacoes, anoFiltro, mesFiltro, 'despesa');
+    return { receitas: r, despesas: d, variacaoDespesa: v };
+  }, [transacoes, filtradas, mesFiltro, anoFiltro]);
 
   function getCat(id: string) {
     return categorias.find((c) => c.id === id);
@@ -126,12 +138,40 @@ export function Transacoes() {
 
         {/* Filtros */}
         <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => setFiltroMes((v) => !v)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filtroMes ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'}`}
+          <select
+            value={mesFiltro}
+            onChange={(e) => {
+              const val = e.target.value;
+              setMesFiltro(val === 'todos' ? 'todos' : parseInt(val, 10));
+            }}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-surface-container-low text-on-surface-variant border-none focus:ring-2 focus:ring-primary cursor-pointer"
           >
-            Este Mês
-          </button>
+            <option value="todos">Todos os Meses</option>
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+          </select>
+
+          {mesFiltro !== 'todos' && (
+            <select
+              value={anoFiltro}
+              onChange={(e) => setAnoFiltro(parseInt(e.target.value, 10))}
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-surface-container-low text-on-surface-variant border-none focus:ring-2 focus:ring-primary cursor-pointer"
+            >
+              {Array.from({ length: 5 }, (_, i) => anoAtual - i).map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          )}
           <button
             onClick={() => setFiltroTipo(filtroTipo === 'despesa' ? 'todos' : 'despesa')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filtroTipo === 'despesa' ? 'bg-expense text-white' : 'bg-surface-container-low text-on-surface-variant'}`}
